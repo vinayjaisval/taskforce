@@ -11,6 +11,7 @@ import useDarkMode from '../../../hooks/useDarkMode';
 import logos from '../../../assets/logo.png';
 import logins from '../../../assets/login.png';
 import axios from 'axios';
+import BASE_URL from "../../../config/api";
 
 interface ILoginHeaderProps {
 	isNewUser?: boolean;
@@ -22,7 +23,6 @@ const LoginHeader: FC<ILoginHeaderProps> = () => {
 			<div className='text-center h4 text-muted mb-5'>Sign in to continue!</div>
 		</>
 	);
-	
 };
 
 interface ILoginProps {
@@ -30,45 +30,42 @@ interface ILoginProps {
 }
 const Login: FC<ILoginProps> = ({ isSignUp }) => {
 	const [user, setUser] = useState({
-		userid: "",
-		user_pass: ""
+		userid: '',
+		user_pass: '',
 	});
 
-	async function onTextFieldChange(e : any) {
+	async function onTextFieldChange(e: any) {
 		setUser({
-		 ...user,
-		 [e.target.name]: e.target.value
-		})
+			...user,
+			[e.target.name]: e.target.value,
+		});
 	}
 
-	async function onFormSubmit(e :any) {
-		e.preventDefault()
+	async function onFormSubmit(e: any) {
+		e.preventDefault();
 		try {
-		  axios.post(`https://task.mycrmdesk.com/backend/api/login`, user)
-		 .then((res) => {
-			const LoginData = res.data;
-      		if(LoginData == "Invalid"){
-				alert("Invalid Login Details !!!")
-				window.scrollTo({ top: 0, behavior: 'smooth' });
-			} else {
-				localStorage.setItem('sess_id', LoginData.id);
-				localStorage.setItem('sess_name', LoginData.name);
-				localStorage.setItem('sess_email', LoginData.email);
-				localStorage.setItem('sess_phone', LoginData.phone);
-				localStorage.setItem('sess_api_key', LoginData.api_key);
-				localStorage.setItem('sess_userid', LoginData.userid);
-				localStorage.setItem('sess_userimg', LoginData.userimg);
-				localStorage.setItem('sess_user_type', LoginData.user_type);
-				window.location.assign(LoginData.user_type+'/dashboard.html');
-			}
-		 });
+			axios.post(`${BASE_URL}/login`, user).then((res) => {
+				const LoginData = res.data;
+				if (LoginData == 'Invalid') {
+					alert('Invalid Login Details !!!');
+					window.scrollTo({ top: 0, behavior: 'smooth' });
+				} else {
+					localStorage.setItem('sess_id', LoginData.id);
+					localStorage.setItem('sess_name', LoginData.name);
+					localStorage.setItem('sess_email', LoginData.email);
+					localStorage.setItem('sess_phone', LoginData.phone);
+					localStorage.setItem('sess_api_key', LoginData.api_key);
+					localStorage.setItem('sess_userid', LoginData.userid);
+					localStorage.setItem('sess_userimg', LoginData.userimg);
+					localStorage.setItem('sess_user_type', LoginData.user_type);
+					window.location.assign(LoginData.user_type + '/dashboard.html');
+				}
+			});
 		} catch (error) {
-			alert("Something is Wrong");
-		 	window.scrollTo({ top: 0, behavior: 'smooth' });
+			alert('Something is Wrong');
+			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
-		 
 	}
-	
 
 	const { darkModeStatus } = useDarkMode();
 
@@ -78,59 +75,49 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
 	const navigate = useNavigate();
 	const handleOnClick = useCallback(() => navigate('/'), [navigate]);
 
-	
-	
 	return (
-		<PageWrapper
-			isProtected={false}
-			title="Login"
-			className=''>
+		<PageWrapper isProtected={false} title='Login' className=''>
 			<Page className='p-0'>
-
-
 				<div className='row'>
 					<div className='col-md-6 col-xs-12 text-center'>
 						<div className='loginLeft'>
-							<h5>Fast. Reliable. Responsive <br />
-								All-In-One AI-Driven Task Engine for</h5>
+							<h5>
+								Fast. Reliable. Responsive <br />
+								All-In-One AI-Driven Task Engine for
+							</h5>
 							<h4>Enterprises | Marketers | Developers</h4>
-							<img src={logins}  />
+							<img src={logins} />
 							<h6>Task Force Application</h6>
 							<p>Seamless integration and easy to access. Built for Developers.</p>
 						</div>
 					</div>
 					<div className='col-md-6 col-xs-12 '>
 						<div className='loginRight '>
-							<img src={logos}  />
+							<img src={logos} />
 						</div>
 						<form className='row g-4 loginFormss'>
 							<h4>User Sign In</h4>
 							<div className='col-12'>
-								<FormGroup
-									id='signup-userid'
-									isFloating
-									label='Your User Id'>
-									<Input 
-										type='text' 
-										autoComplete='userid' 
+								<FormGroup id='signup-userid' isFloating label='Your User Id'>
+									<Input
+										type='text'
+										autoComplete='userid'
 										name='userid'
 										id='userid'
-										value={user.userid} 
-										onChange={e => onTextFieldChange(e)} 
-										/>
+										value={user.userid}
+										onChange={(e) => onTextFieldChange(e)}
+									/>
 								</FormGroup>
 							</div>
 							<div className='col-12'>
-								<FormGroup
-									id='signup-password'
-									isFloating
-									label='Password'>
+								<FormGroup id='signup-password' isFloating label='Password'>
 									<Input
 										type='password'
 										autoComplete='password'
 										name='user_pass'
 										id='user_pass'
-										value={user.user_pass} onChange={e => onTextFieldChange(e)}
+										value={user.user_pass}
+										onChange={(e) => onTextFieldChange(e)}
 									/>
 								</FormGroup>
 							</div>
@@ -138,24 +125,16 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
 								<Button
 									color='info'
 									className=' py-6'
-									onClick={e => onFormSubmit(e)}>
+									onClick={(e) => onFormSubmit(e)}>
 									Log In
 								</Button>
 							</div>
-
-
-							
-
-							
 						</form>
 					</div>
 				</div>
-
-				
 			</Page>
 		</PageWrapper>
 	);
 };
-
 
 export default Login;

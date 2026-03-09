@@ -12,10 +12,9 @@ import OffCanvas, {
 	OffCanvasTitle,
 } from '../../../../components/bootstrap/OffCanvas';
 
-
+import BASE_URL from "../../../../config/api";
 
 const EditCanva = (props) => {
-
 	const userId = props.id;
 
 	const [offcanvasStatus, setOffcanvasStatus] = useState(false);
@@ -31,154 +30,139 @@ const EditCanva = (props) => {
 		getSources();
 	};
 
-
 	const [sources, setSources] = useState({
-		name: "",
-		status: ""
+		name: '',
+		status: '',
 	});
 
 	async function getSources() {
 		try {
-			const sourcesApi = await axios.get(`https://task.mycrmdesk.com/backend/api/admin/edit-skills/${userId}`)
+			const sourcesApi = await axios.get(`${BASE_URL}/admin/edit-skills/${userId}`);
 			setSources(sourcesApi.data);
 		} catch (error) {
-			console.log("Something is Wrong");
+			console.log('Something is Wrong');
 		}
 	}
 
-	
 	function onTextFieldChange(e) {
 		setSources({
 			...sources,
-			[e.target.name]: e.target.value
-		})
+			[e.target.name]: e.target.value,
+		});
 	}
-	
-	
+
 	async function onFormSubmit(e) {
-		e.preventDefault()
+		e.preventDefault();
 		try {
-			axios.put(`https://task.mycrmdesk.com/backend/api/admin/update-skills/${userId}`, sources)
-			.then((res) => {
-			document.getElementById("succ_message2").style.display = "block";
-			document.getElementById("alert_message2").innerHTML = res.data;
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-			})
+			axios.put(`${BASE_URL}/admin/update-skills/${userId}`, sources).then((res) => {
+				document.getElementById('succ_message2').style.display = 'block';
+				document.getElementById('alert_message2').innerHTML = res.data;
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			});
 			//history.push("/")
-			
 		} catch (error) {
 			//console.log("Something is Wrong");
-			document.getElementById("succ_message2").style.display = "block";
-			document.getElementById("alert_message2").innerHTML = error;
+			document.getElementById('succ_message2').style.display = 'block';
+			document.getElementById('alert_message2').innerHTML = error;
 			//document.getElementById("succ_message").style.display = "block";
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
-			
 	}
-
 
 	return (
 		<>
-		<Button
-			color='primary'
-			isLight
-			icon='Send'
-			onClick={() => {
-				initialStatus();
-				setOffcanvasStatus(true);
-			}}
-			aria-controls='exampleOffcanvas'>
-			Edit
-		</Button>
-		
+			<Button
+				color='primary'
+				isLight
+				icon='Send'
+				onClick={() => {
+					initialStatus();
+					setOffcanvasStatus(true);
+				}}
+				aria-controls='exampleOffcanvas'>
+				Edit
+			</Button>
 
-		<OffCanvas
-			id='exampleOffcanvas'
-			titleId='offcanvasExampleLabel'
-			isOpen={offcanvasStatus}
-			setOpen={setOffcanvasStatus}
-			isBackdrop={backdropStatus}
-			isBodyScroll={bodyScrollStatus}
-			placement={placement}
-		>
-			<OffCanvasHeader setOpen={headerClose ? setOffcanvasStatus : undefined}>
-				<OffCanvasTitle id='offcanvasExampleLabel'>
-					Update Skills	
-				</OffCanvasTitle>
-			</OffCanvasHeader>
-			<OffCanvasBody>
-				
+			<OffCanvas
+				id='exampleOffcanvas'
+				titleId='offcanvasExampleLabel'
+				isOpen={offcanvasStatus}
+				setOpen={setOffcanvasStatus}
+				isBackdrop={backdropStatus}
+				isBodyScroll={bodyScrollStatus}
+				placement={placement}>
+				<OffCanvasHeader setOpen={headerClose ? setOffcanvasStatus : undefined}>
+					<OffCanvasTitle id='offcanvasExampleLabel'>Update Skills</OffCanvasTitle>
+				</OffCanvasHeader>
+				<OffCanvasBody>
+					<div id='succ_message2'>
+						<Alert
+							icon='Verified'
+							isLight
+							color='primary'
+							borderWidth={0}
+							className='shadow-3d-primary'
+							isDismissible>
+							<AlertHeading tag='h2' className='h4'>
+								Alert! 🎉
+							</AlertHeading>
+							<span id='alert_message2'></span>
+						</Alert>
+					</div>
 
-				<div id="succ_message2">
-				<Alert
-					icon='Verified'
-					isLight
-					color='primary'
-					borderWidth={0}
-					className='shadow-3d-primary'
-					isDismissible>
-					<AlertHeading tag='h2' className='h4'>
-						Alert! 🎉
-					</AlertHeading>
-					<span id="alert_message2"></span>
-				</Alert>
-				</div>
-
-				<form className='row g-4'>
-					<input type="hidden" name="id" value={userId} />
-					<div className='col-12'>
-						<FormGroup
-							id='signup-name'
-							isFloating
-							label='Name'>
-							<Input 
-								type='text' 
-								autoComplete='name' 
-								name='name'
-								id='name'
-								value={sources.name} 
-								onChange={e => onTextFieldChange(e)} 
+					<form className='row g-4'>
+						<input type='hidden' name='id' value={userId} />
+						<div className='col-12'>
+							<FormGroup id='signup-name' isFloating label='Name'>
+								<Input
+									type='text'
+									autoComplete='name'
+									name='name'
+									id='name'
+									value={sources.name}
+									onChange={(e) => onTextFieldChange(e)}
 								/>
-						</FormGroup>
-					</div>
-					<div className='col-12'>
-						<FormGroup
-							id='signup-status'
-							isFloating
-							label='Status'>
-							<select name="status" id="status" className="form-control select2" onChange={e => onTextFieldChange(e)}>
-                              <option value={sources.status}>Select</option>
-                              {
-                                (sources.status == 'Active') ? 
-                                <option selected value="Active">Active</option> : 
-                                <option value="Active">Active</option>
-                              }
-                              {
-                                (sources.status == 'InActive') ? 
-                                <option selected value="InActive">InActive</option> : 
-                                <option value="InActive">InActive</option>
-                              }
-                            </select>
-						</FormGroup>
-					</div>
-					
-					<div className='col-12'>
-						<Button
-							color='info'
-							className='btn-sm py-3'
-							onClick={e => onFormSubmit(e)}>
-							Update
-						</Button>
-					</div>
-				</form>
+							</FormGroup>
+						</div>
+						<div className='col-12'>
+							<FormGroup id='signup-status' isFloating label='Status'>
+								<select
+									name='status'
+									id='status'
+									className='form-control select2'
+									onChange={(e) => onTextFieldChange(e)}>
+									<option value={sources.status}>Select</option>
+									{sources.status == 'Active' ? (
+										<option selected value='Active'>
+											Active
+										</option>
+									) : (
+										<option value='Active'>Active</option>
+									)}
+									{sources.status == 'InActive' ? (
+										<option selected value='InActive'>
+											InActive
+										</option>
+									) : (
+										<option value='InActive'>InActive</option>
+									)}
+								</select>
+							</FormGroup>
+						</div>
 
-
-			</OffCanvasBody>
-		</OffCanvas>
+						<div className='col-12'>
+							<Button
+								color='info'
+								className='btn-sm py-3'
+								onClick={(e) => onFormSubmit(e)}>
+								Update
+							</Button>
+						</div>
+					</form>
+				</OffCanvasBody>
+			</OffCanvas>
 		</>
 	);
 };
 
 export default EditCanva;
-
-

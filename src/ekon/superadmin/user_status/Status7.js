@@ -1,47 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';	
+import axios from 'axios';
+import BASE_URL from "../../../config/api";
 
-	
-	const Status7 = (props) => {
+const Status7 = (props) => {
+	const id = props.id;
+	const [counter, setCounter] = useState(0);
+	const [taskHistory, setTaskHistory] = useState([]);
 
-		const id = props.id;
-		const [counter, setCounter] = useState(0);
-		const [taskHistory, setTaskHistory] = useState([]);
-
-		useEffect(() => {
-			
-			setCounter(counter+1);
-			if(counter == 0){
-				getTaskHistory();
-			}
-		}, [id]);
-
-		async function getTaskHistory() {
-				
-			try {
-				const taskHistoryApi = await axios.get(`https://task.mycrmdesk.com/backend/api/admin/get_user_tot_delay_task/${id}`)
-				setTaskHistory(taskHistoryApi.data);
-			} catch (error) {
-				console.log("Something is Wrong -taskHistory");
-			}
+	useEffect(() => {
+		setCounter(counter + 1);
+		if (counter == 0) {
+			getTaskHistory();
 		}
+	}, [id]);
 
-		
-		return (
+	async function getTaskHistory() {
+		try {
+			const taskHistoryApi = await axios.get(
+				`${BASE_URL}/admin/get_user_tot_delay_task/${id}`,
+			);
+			setTaskHistory(taskHistoryApi.data);
+		} catch (error) {
+			console.log('Something is Wrong -taskHistory');
+		}
+	}
 
-			<div className='text-primary'>
-			{
-				
-				taskHistory && taskHistory.length > 0 ?
-				taskHistory.map((item,index)=>(
-					<div key={index+1} className='text-danger'>
-						{item.countID}
-					</div>
-				)) :
-				'No Delay Task!!'
-			}
-			</div>
-		);
- 	}
+	return (
+		<div className='text-primary'>
+			{taskHistory && taskHistory.length > 0
+				? taskHistory.map((item, index) => (
+						<div key={index + 1} className='text-danger'>
+							{item.countID}
+						</div>
+				  ))
+				: 'No Delay Task!!'}
+		</div>
+	);
+};
 
-  	export default Status7;
+export default Status7;
