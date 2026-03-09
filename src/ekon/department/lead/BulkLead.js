@@ -21,88 +21,81 @@ import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import EditUserCanva from './EditUserCanva';
 import FollowCanva from './FollowCanva';
-
+import BASE_URL from "../../../config/api";
 
 const BulkLead = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-	
+
 	const [astroList, setAstroList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
 	const [offset, setOffset] = useState([]);
-	
-	useEffect(() => {
 
+	useEffect(() => {
 		async function getAstroList(page) {
 			page = page;
 			try {
-				const astroListApi = await axios.get(`https://task.mycrmdesk.com/backend/api/admin/leads?page=`+page)
+				const astroListApi = await axios.get(`${BASE_URL}/admin/leads?page=` + page);
 				setAstroList(astroListApi.data.data);
 				setTotalRecords(astroListApi.data.total);
 				setLimit(astroListApi.data.limit);
 				setOffset(astroListApi.data.offset);
 			} catch (error) {
-				console.log("Something is Wrong -astroList");
+				console.log('Something is Wrong -astroList');
 			}
 		}
 
 		getAstroList(1);
 	}, [id]);
 
-	
-
-	async function getPaginatedData(page){
-
-		const keywordVal = document.getElementById("searchInput1").value;
+	async function getPaginatedData(page) {
+		const keywordVal = document.getElementById('searchInput1').value;
 
 		try {
-			const astroListApi = await axios.get(`https://task.mycrmdesk.com/backend/api/admin/leads?page=`+page+`&keywords=`+keywordVal)
+			const astroListApi = await axios.get(
+				`${BASE_URL}/admin/leads?page=` + page + `&keywords=` + keywordVal,
+			);
 			setAstroList(astroListApi.data.data);
 			setTotalRecords(astroListApi.data.total);
 			setLimit(astroListApi.data.limit);
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
-			console.log("Something is Wrong -astroList Pagination");
+			console.log('Something is Wrong -astroList Pagination');
 		}
-
 	}
 
-	async function handleClick(e, delId){
-
-		axios.get(`https://task.mycrmdesk.com/backend/api/admin/lead_delete/${delId}`)
-		.then((res) => {
+	async function handleClick(e, delId) {
+		axios.get(`${BASE_URL}/admin/lead_delete/${delId}`).then((res) => {
 			getPaginatedData(1);
-		  document.getElementById("succ_message").style.display = "block";
-		  document.getElementById("alert_message").innerHTML = res.data;
-		  window.scrollTo({ top: 0, behavior: 'smooth' });
-		})
-
+			document.getElementById('succ_message').style.display = 'block';
+			document.getElementById('alert_message').innerHTML = res.data;
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		});
 	}
 
 	const [search, setSearch] = useState({
-		keywords: ""
+		keywords: '',
 	});
 
 	async function onTextFieldChange(e) {
-
 		setSearch({
 			...search,
-			[e.target.name]: e.target.value
-		})
+			[e.target.name]: e.target.value,
+		});
 		try {
-			const astroListApi = await axios.get(`https://task.mycrmdesk.com/backend/api/admin/leads?page=1&keywords=`+e.target.value)
+			const astroListApi = await axios.get(
+				`${BASE_URL}/admin/leads?page=1&keywords=` + e.target.value,
+			);
 			setAstroList(astroListApi.data.data);
 			setTotalRecords(astroListApi.data.total);
 			setLimit(astroListApi.data.limit);
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
-			console.log("Something is Wrong -allLeads");
+			console.log('Something is Wrong -allLeads');
 		}
 	}
-
-	
 
 	return (
 		<PageWrapper title={dashboardMenu.manageAstrologer.subMenu.ManageAstro.text}>
@@ -148,52 +141,70 @@ const BulkLead = () => {
 					</ButtonGroup>
 				</SubHeaderRight>
 			</SubHeader>
-			
-			<Page>
-				
-				<div id='bootstrap' className='row scroll-margin'>
-					
 
+			<Page>
+				<div id='bootstrap' className='row scroll-margin'>
 					<div className='col-md-12 col-xs-12'>
 						<Card stretch>
 							<CardHeader className=''>
 								<h4>Bulk Upload</h4>
 							</CardHeader>
 							<CardBody className=''>
-							<br />
-                            <div className='col-12'>
+								<br />
+								<div className='col-12'>
+									<a href='https://www.overseaseducationlane.com/downloadExcel/xls'>
+										<button className='btn btn-success'>
+											Download Format Excel (.xls)
+										</button>
+									</a>
+								</div>
+								<br></br>
+								<div className='col-6'>
+									<form
+										className='onSubmitdisableButton'
+										encType='multipart/form-data'>
+										<input
+											type='hidden'
+											name='_token'
+											value='ovDhzn4zu64TbzrRQcdCWl55MDpiwWdOBjE7skgy'
+										/>
+										<div className='row'>
+											<div className='col-md-12'>
+												<label>
+													{' '}
+													&nbsp;&nbsp;Upload Excel File :{' '}
+													<span className='text-danger'>*</span>
+												</label>
+												<span className='text-muted'>
+													Format: .xls, .xslx
+												</span>
+												<input
+													type='file'
+													className='form-control'
+													name='select_file'
+													value=''
+													placeholder='Enter Name'
+												/>
+												<span className='text-danger'></span>
+											</div>
 
-                            <a href="https://www.overseaseducationlane.com/downloadExcel/xls"><button className="btn btn-success">Download Format Excel (.xls)</button>
-                            
-                            </a>
-                            </div>
-                            <br></br>
-                            <div className='col-6'>
-
-
-                          <form className="onSubmitdisableButton" encType="multipart/form-data">
-						<input type="hidden" name="_token" value="ovDhzn4zu64TbzrRQcdCWl55MDpiwWdOBjE7skgy" />
-						<div className="row">
-							<div className="col-md-12">
-								<label> &nbsp;&nbsp;Upload Excel File : <span className="text-danger">*</span></label>
-								<span className="text-muted">Format: .xls, .xslx</span>
-								<input type="file" className="form-control" name="select_file" value="" placeholder="Enter Name" />
-								<span className="text-danger"></span>
-							</div>
-				
-							<div className="col-md-12">
-                            <br></br>
-								<input type="submit" name="upload" className="btn btn-info" value="Upload" />								
-							</div>
-						</div>
-					</form>
-                          </div>
-                          <div></div>
-						  <br />
-						  </CardBody>
+											<div className='col-md-12'>
+												<br></br>
+												<input
+													type='submit'
+													name='upload'
+													className='btn btn-info'
+													value='Upload'
+												/>
+											</div>
+										</div>
+									</form>
+								</div>
+								<div></div>
+								<br />
+							</CardBody>
 						</Card>
 					</div>
-					
 				</div>
 			</Page>
 		</PageWrapper>
@@ -201,11 +212,3 @@ const BulkLead = () => {
 };
 
 export default BulkLead;
-
-
-
-
-
-
-
-

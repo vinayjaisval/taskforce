@@ -8,51 +8,41 @@ import { dashboardMenu } from '../../menu';
 import Card, { CardBody, CardFooter, CardHeader } from '../../components/bootstrap/Card';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-
+import BASE_URL from "../../config/api";
 
 const Dashboard = () => {
-
 	const id = localStorage.getItem('sess_id');
 
 	const [users, setUsers] = useState([]);
 	const [statusCount, setStatusCount] = useState([]);
 
-
 	useEffect(() => {
-		
 		async function getUsers() {
 			try {
-				const userApi = await axios.get(`https://task.mycrmdesk.com/backend/api/admin/all-agent-list-data-project/${id}`);
+				const userApi = await axios.get(
+					`${BASE_URL}/admin/all-agent-list-data-project/${id}`,
+				);
 				setUsers(userApi.data);
 			} catch (error) {
-				console.log("Something is Wrong 1");
+				console.log('Something is Wrong 1');
 			}
 		}
 
-		
-
-		async function getStatusCount(){
+		async function getStatusCount() {
 			try {
-				const statusCountApi = await axios.get(`https://task.mycrmdesk.com/backend/api/admin/all-status-count-project/${id}`)
+				const statusCountApi = await axios.get(
+					`${BASE_URL}/admin/all-status-count-project/${id}`,
+				);
 				setStatusCount(statusCountApi.data);
 			} catch (error) {
-				console.log("Something is Wrong");
+				console.log('Something is Wrong');
 			}
 		}
 
-
-		
-
 		getUsers();
-		
+
 		getStatusCount();
 	}, [id]);
-
-
-	
-
-	
-
 
 	useMinimizeAside();
 	return (
@@ -69,11 +59,9 @@ const Dashboard = () => {
 						]}
 					/>
 				</SubHeaderLeft>
-				
 			</SubHeader>
-			
+
 			<Page>
-				
 				<div id='bootstrap' className='row scroll-margin'>
 					<div className='col-md-12'>
 						<Card stretch>
@@ -81,72 +69,64 @@ const Dashboard = () => {
 								<h4>Users Task Status</h4>
 							</CardHeader>
 							<CardBody className=''>
-								<iframe width='100%' height={500} src={"https://task.mycrmdesk.com/backend/report?project="+id}></iframe>
+								<iframe
+									width='100%'
+									height={500}
+									src={
+										'https://task.mycrmdesk.com/backend/report?project=' + id
+									}></iframe>
 							</CardBody>
 						</Card>
-
-						
 
 						<Card stretch>
 							<CardHeader className=''>
 								<h4>User Wise Task</h4>
 							</CardHeader>
 							<CardBody className='row'>
-								
-								{
-									users && users.length > 0 ?
-									users.map((item,index)=>(
-										<div className='col-md-2 col-xs-12' key={index}>
-											<Card stretch>
-												<CardHeader className=''>
-													<b>{item.name}</b>
-												</CardHeader>
-												<CardBody className=''>
-													Total Task:- <b>-</b> <br />
-												</CardBody>
-												<CardFooter className=''>
-													<Link to={'/project/user-task/'+item.id}>Task List</Link>
-												</CardFooter>
-											</Card>
-										</div>
-									)) :
-									''
-								}
-
+								{users && users.length > 0
+									? users.map((item, index) => (
+											<div className='col-md-2 col-xs-12' key={index}>
+												<Card stretch>
+													<CardHeader className=''>
+														<b>{item.name}</b>
+													</CardHeader>
+													<CardBody className=''>
+														Total Task:- <b>-</b> <br />
+													</CardBody>
+													<CardFooter className=''>
+														<Link to={'/project/user-task/' + item.id}>
+															Task List
+														</Link>
+													</CardFooter>
+												</Card>
+											</div>
+									  ))
+									: ''}
 							</CardBody>
 						</Card>
-
-						
 
 						<Card stretch>
 							<CardHeader className=''>
 								<h4>Task Status</h4>
 							</CardHeader>
 							<CardBody className='row'>
-								
-								{
-									statusCount && statusCount.length > 0 ?
-									statusCount.map((item,index)=>(
-										<div className='col-md-2 col-xs-6' key={index}>
-											<Card stretch>
-												<CardHeader className=''>
-													<b>{item.name}</b>
-												</CardHeader>
-												<CardBody className=''>
-													<h4>{item.countID}</h4>
-												</CardBody>
-												<CardFooter className=''>
-													Read More
-												</CardFooter>
-											</Card>
-										</div>
-									)) :
-									''
-								}
-
+								{statusCount && statusCount.length > 0
+									? statusCount.map((item, index) => (
+											<div className='col-md-2 col-xs-6' key={index}>
+												<Card stretch>
+													<CardHeader className=''>
+														<b>{item.name}</b>
+													</CardHeader>
+													<CardBody className=''>
+														<h4>{item.countID}</h4>
+													</CardBody>
+													<CardFooter className=''>Read More</CardFooter>
+												</Card>
+											</div>
+									  ))
+									: ''}
 							</CardBody>
 						</Card>
-
 					</div>
 				</div>
 			</Page>
@@ -155,5 +135,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-

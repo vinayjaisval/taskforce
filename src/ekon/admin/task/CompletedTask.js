@@ -18,88 +18,83 @@ import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link } from 'react-router-dom';
-
+import BASE_URL from "../../../config/api";
 
 const CompletedTask = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-	
+
 	const [astroList, setAstroList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
 	const [offset, setOffset] = useState([]);
-	
-	useEffect(() => {
 
+	useEffect(() => {
 		async function getAstroList(page) {
 			page = page;
 			try {
-				const astroListApi = await axios.get(`https://task.mycrmdesk.com/backend/api/admin/leads_completed/${id}?page=`+page)
+				const astroListApi = await axios.get(
+					`${BASE_URL}/admin/leads_completed/${id}?page=` + page,
+				);
 				setAstroList(astroListApi.data.data);
 				setTotalRecords(astroListApi.data.total);
 				setLimit(astroListApi.data.limit);
 				setOffset(astroListApi.data.offset);
 			} catch (error) {
-				console.log("Something is Wrong -astroList");
+				console.log('Something is Wrong -astroList');
 			}
 		}
 
 		getAstroList(1);
 	}, [id]);
 
-	
-
-	async function getPaginatedData(page){
-
-		const keywordVal = document.getElementById("searchInput1").value;
+	async function getPaginatedData(page) {
+		const keywordVal = document.getElementById('searchInput1').value;
 
 		try {
-			const astroListApi = await axios.get(`https://task.mycrmdesk.com/backend/api/admin/leads_completed/${id}?page=`+page+`&keywords=`+keywordVal)
+			const astroListApi = await axios.get(
+				`${BASE_URL}/admin/leads_completed/${id}?page=` + page + `&keywords=` + keywordVal,
+			);
 			setAstroList(astroListApi.data.data);
 			setTotalRecords(astroListApi.data.total);
 			setLimit(astroListApi.data.limit);
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
-			console.log("Something is Wrong -astroList Pagination");
+			console.log('Something is Wrong -astroList Pagination');
 		}
-
 	}
 
-	async function handleClick(e, delId){
-
-		axios.get(`https://task.mycrmdesk.com/backend/api/admin/lead_delete/${delId}`)
-		.then((res) => {
+	async function handleClick(e, delId) {
+		axios.get(`${BASE_URL}/admin/lead_delete/${delId}`).then((res) => {
 			getPaginatedData(1);
-		  document.getElementById("succ_message").style.display = "block";
-		  document.getElementById("alert_message").innerHTML = res.data;
-		  window.scrollTo({ top: 0, behavior: 'smooth' });
-		})
-
+			document.getElementById('succ_message').style.display = 'block';
+			document.getElementById('alert_message').innerHTML = res.data;
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		});
 	}
 
 	const [search, setSearch] = useState({
-		keywords: ""
+		keywords: '',
 	});
 
 	async function onTextFieldChange(e) {
-
 		setSearch({
 			...search,
-			[e.target.name]: e.target.value
-		})
+			[e.target.name]: e.target.value,
+		});
 		try {
-			const astroListApi = await axios.get(`https://task.mycrmdesk.com/backend/api/admin/leads_completed/${id}?page=1&keywords=`+e.target.value)
+			const astroListApi = await axios.get(
+				`${BASE_URL}/admin/leads_completed/${id}?page=1&keywords=` + e.target.value,
+			);
 			setAstroList(astroListApi.data.data);
 			setTotalRecords(astroListApi.data.total);
 			setLimit(astroListApi.data.limit);
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
-			console.log("Something is Wrong -allLeads");
+			console.log('Something is Wrong -allLeads');
 		}
 	}
-
-	
 
 	return (
 		<PageWrapper title={dashboardMenu.manageAstrologer.subMenu.ManageAstro.text}>
@@ -111,17 +106,15 @@ const CompletedTask = () => {
 							{
 								title: 'Completed Task',
 								to: '/admin/task.html',
-							}
+							},
 						]}
 					/>
 				</SubHeaderLeft>
-				
 			</SubHeader>
-			
+
 			<Page>
-				
 				<div id='bootstrap' className='row scroll-margin h-100'>
-					<div id="succ_message">
+					<div id='succ_message'>
 						<Alert
 							icon='Verified'
 							isLight
@@ -132,124 +125,135 @@ const CompletedTask = () => {
 							<AlertHeading tag='h2' className='h4'>
 								Alert! 🎉
 							</AlertHeading>
-							<span id="alert_message"></span>
+							<span id='alert_message'></span>
 						</Alert>
 					</div>
 					<div className='col-12'>
 						<Card stretch>
 							<CardHeader className=''>
 								<h4>Completed Task</h4>
-								<div className="d-flex" data-tour="search">
-									<label className="border-0 bg-transparent cursor-pointer mar-t-5" htmlFor="searchInput1">
-									<Icon
-										icon='Search'
-										className='Search'
-										color='primary' 
-										size='2x' 
-										forceFamily={ null }
-									/>
+								<div className='d-flex' data-tour='search'>
+									<label
+										className='border-0 bg-transparent cursor-pointer mar-t-5'
+										htmlFor='searchInput1'>
+										<Icon
+											icon='Search'
+											className='Search'
+											color='primary'
+											size='2x'
+											forceFamily={null}
+										/>
 									</label>
-									<input 
-										id="searchInput1" 
-										type="search" 
-										className="form-control border-0 shadow-none bg-transparent" 
-										placeholder="Search..." 
-										autoComplete="off" 
-										value={search.keywords} 
-										name="keywords"
-										onChange={e => onTextFieldChange(e)}
+									<input
+										id='searchInput1'
+										type='search'
+										className='form-control border-0 shadow-none bg-transparent'
+										placeholder='Search...'
+										autoComplete='off'
+										value={search.keywords}
+										name='keywords'
+										onChange={(e) => onTextFieldChange(e)}
 									/>
 								</div>
 							</CardHeader>
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table table-modern table-hover'>
 									<thead>
-									<tr>
-										<th width="1">SNo </th>
-										<th>Heading</th>
-										<th>Status</th>
-										<th>Category</th>
-										<th>Deadline</th>
-										<th>Assignee</th>
-										<th>Remarks</th>
-										<th width="120"></th>
-										<th width="120"></th>
-										<th width="1"></th>
-									</tr>
+										<tr>
+											<th width='1'>SNo </th>
+											<th>Heading</th>
+											<th>Status</th>
+											<th>Category</th>
+											<th>Deadline</th>
+											<th>Assignee</th>
+											<th>Remarks</th>
+											<th width='120'></th>
+											<th width='120'></th>
+											<th width='1'></th>
+										</tr>
 									</thead>
 									<tbody>
-									{
-										astroList && astroList.length > 0 ?
-										astroList.map((item,index)=>(
-											<tr key={index+1}>
-												<td scope="col">{index+ 1 + offset}</td>
-												<td scope="col">{item.name}</td>
-												<td scope="col">{item.source_name}</td>
-												<td scope="col">{item.category_id_name}</td>
-												<td scope="col">{item.dedline}</td>
-												<td scope="col">{item.assignee}</td>
-												<td scope="col">{item.remarks}</td>
-												<td>
-													<Link to={'/admin/task-log/'+item.id}>
-														<Button
-															color='primary'
-															isLight
-															icon='FollowTheSigns'>
-															Follow
-														</Button>
-													</Link>
-												</td>
-												<td>
-													<Link to={'/admin/edit-task/'+item.id}>
-														<Button
-															color='primary'
-															isLight
-															icon='Send'>
-															Edit
-														</Button>
-													</Link>
-												</td>
-												<td>
-													<Dropdown>
-														<DropdownToggle hasIcon={false}>
+										{astroList && astroList.length > 0 ? (
+											astroList.map((item, index) => (
+												<tr key={index + 1}>
+													<td scope='col'>{index + 1 + offset}</td>
+													<td scope='col'>{item.name}</td>
+													<td scope='col'>{item.source_name}</td>
+													<td scope='col'>{item.category_id_name}</td>
+													<td scope='col'>{item.dedline}</td>
+													<td scope='col'>{item.assignee}</td>
+													<td scope='col'>{item.remarks}</td>
+													<td>
+														<Link to={'/admin/task-log/' + item.id}>
 															<Button
-																icon='MoreHoriz'
-																color='dark'
+																color='primary'
 																isLight
-																shadow='sm'
-															/>
-														</DropdownToggle>
-														<DropdownMenu isAlignmentEnd>
-															
-															<DropdownItem>
-																<Button icon='Visibility'>
-																	<span onClick={e => handleClick(e, item.id)} > <i className="fa fa-trash"></i> Delete Task</span>
-																</Button>
-															</DropdownItem>
-														</DropdownMenu>
-													</Dropdown>
+																icon='FollowTheSigns'>
+																Follow
+															</Button>
+														</Link>
+													</td>
+													<td>
+														<Link to={'/admin/edit-task/' + item.id}>
+															<Button
+																color='primary'
+																isLight
+																icon='Send'>
+																Edit
+															</Button>
+														</Link>
+													</td>
+													<td>
+														<Dropdown>
+															<DropdownToggle hasIcon={false}>
+																<Button
+																	icon='MoreHoriz'
+																	color='dark'
+																	isLight
+																	shadow='sm'
+																/>
+															</DropdownToggle>
+															<DropdownMenu isAlignmentEnd>
+																<DropdownItem>
+																	<Button icon='Visibility'>
+																		<span
+																			onClick={(e) =>
+																				handleClick(
+																					e,
+																					item.id,
+																				)
+																			}>
+																			{' '}
+																			<i className='fa fa-trash'></i>{' '}
+																			Delete Task
+																		</span>
+																	</Button>
+																</DropdownItem>
+															</DropdownMenu>
+														</Dropdown>
+													</td>
+												</tr>
+											))
+										) : (
+											<tr>
+												<td colSpan={10}>
+													<div className='text-center'>
+														<div className='loader'></div>
+													</div>
 												</td>
 											</tr>
-										)) :
-										<tr>
-											<td colSpan={10}>
-												<div className='text-center'>
-													<div className="loader"></div>
-												</div>
-											</td>
-										</tr>
-									}
-					
+										)}
 									</tbody>
 								</table>
 							</CardBody>
 							<CardFooter>
-								{totalRecords > 12 &&
+								{totalRecords > 12 && (
 									<PaginationComponent
-										getAllData={getPaginatedData} 
+										getAllData={getPaginatedData}
 										totalRecords={totalRecords}
-										itemsCountPerPage = {limit} />
-								}
+										itemsCountPerPage={limit}
+									/>
+								)}
 							</CardFooter>
 						</Card>
 					</div>
@@ -260,13 +264,3 @@ const CompletedTask = () => {
 };
 
 export default CompletedTask;
-
-
-
-
-
-
-
-
-
-
