@@ -20,7 +20,7 @@ const Chat = () => {
 		setEditorLoaded(true);
 	}, []);
 
-	const [lead, setLead] = useState([]);
+	
 
 	const [activeMember, setActiveMember] = useState([]);
 	const [activeMemberGroup, setActiveMemberGroup] = useState(false);
@@ -60,8 +60,9 @@ const Chat = () => {
 
 	function bootomReload() {
 		const contentContainer = document.querySelector('.msger-chat');
-		// Scroll to the bottom of the container on page load or refresh
-		contentContainer.scrollTop = contentContainer.scrollHeight;
+		if (contentContainer) {
+			contentContainer.scrollTop = contentContainer.scrollHeight;
+		}
 	}
 
 	async function onMemeberChat(e, memId, memName) {
@@ -105,18 +106,14 @@ const Chat = () => {
 	async function onFormSubmit(e) {
 		e.preventDefault();
 
-		if (editorData == '' || editorData == null) {
+		if (editorData === '' || editorData == null) {
 			alert('Fill Message First !!!');
 			window.scrollTo({ top: 0, behavior: 'smooth' });
-		} else if (activeMemberId == '' || activeMemberId == null) {
+		} else if (activeMemberId === '' || activeMemberId == null) {
 			alert('Select Member First to Chat !!!');
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		} else {
-			if (activeMemberGroup == true) {
-				var isGroup = 1;
-			} else {
-				isGroup = 2;
-			}
+			let isGroup = activeMemberGroup ? 1 : 2;
 
 			const formData = new FormData();
 			formData.append('message', editorData);
@@ -127,18 +124,17 @@ const Chat = () => {
 						`${BASE_URL}/agent/start-chat/${id}/${activeMemberId}?is_group=${isGroup}`,
 						formData,
 					)
-					.then((res) => {
-						console.log(res);
-
+					.then(() => {
 						window.scrollTo({ top: 0, behavior: 'smooth' });
 						bootomReload();
-						if (activeMemberGroup == true) {
+
+						if (activeMemberGroup) {
 							getActiveChatListGrp(activeMemberId);
 						} else {
 							getActiveChatList(activeMemberId);
 						}
-						//getActiveChatList(activeMemberId);
-						setLead(false);
+
+						setEditorData('');
 					});
 			} catch (error) {
 				alert('Something is Wrong');
@@ -149,63 +145,58 @@ const Chat = () => {
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			if (activeMemberGroup == true) {
+			if (activeMemberGroup) {
 				getActiveChatListGrp(activeMemberId);
-			} else {
+			} else if (activeMemberId) {
 				getActiveChatList(activeMemberId);
 			}
 		}, 5000);
-		return () => clearInterval(interval);
-	}, [activeMemberId]);
 
-	async function onTextFieldChange(e) {
-		setLead({
-			...lead,
-			[e.target.name]: e.target.value,
-		});
-	}
+		return () => clearInterval(interval);
+	}, [activeMemberId, activeMemberGroup]);
 
 	return (
 		<PageWrapper title={dashboardMenu2.chat.text}>
 			<Page style={{ marginTop: 0, paddingTop: 0 }}>
 				<div id='bootstrap' className='row scroll-margin h-100'>
+					
 					<div className='col-md-3 col-xs-12'>
 						<Card stretch>
-							<CardHeader className=''>
+							<CardHeader>
 								<h4>Chat Group</h4>
 							</CardHeader>
-							<CardBody className=''>
-								{activeGroupChat && activeGroupChat.length > 0 ? (
+							<CardBody>
+								{activeGroupChat?.length > 0 ? (
 									activeGroupChat.map((item, index) => (
 										<span
-											key={index + 1}
+											key={index}
 											onClick={(e) => onMemeberChatGrp(e, item.id, item.name)}
 											className='mem_group'>
 											{item.name}
 										</span>
 									))
 								) : (
-									<h4> No Group Found !!</h4>
+									<h4>No Group Found !!</h4>
 								)}
 							</CardBody>
 						</Card>
 
 						<Card stretch>
-							<CardHeader className=''>
+							<CardHeader>
 								<h4>Members</h4>
 							</CardHeader>
-							<CardBody className=''>
-								{activeMember && activeMember.length > 0 ? (
+							<CardBody>
+								{activeMember?.length > 0 ? (
 									activeMember.map((item, index) => (
 										<span
-											key={index + 1}
+											key={index}
 											onClick={(e) => onMemeberChat(e, item.id, item.name)}
 											className='mem_group'>
 											{item.name}
 										</span>
 									))
 								) : (
-									<h4> No Member Found !!</h4>
+									<h4>No Member Found !!</h4>
 								)}
 							</CardBody>
 						</Card>
@@ -213,91 +204,53 @@ const Chat = () => {
 
 					<div className='col-md-9 col-xs-12'>
 						<Card stretch>
-							<CardHeader className=''>
+							<CardHeader>
 								<h4>Chat with {activeMemberName}</h4>
 							</CardHeader>
-							<CardBody className=''>
+							<CardBody>
 								<section className='msger'>
 									<main className='msger-chat' style={{ maxHeight: '300px' }}>
-										{activeChatList && activeChatList.length > 0 ? (
+										{activeChatList?.length > 0 ? (
 											activeChatList.map((item, index) => (
-												<div className='msg left-msg' key={index + 1}>
+												<div className='msg left-msg' key={index}>
 													<div className='msg-bubble'>
 														<div className='msg-info'>
 															<div className='msg-info-name'>
 																{item.mem_name}
 															</div>
 															<div className='msg-info-time'>
-																{format(
-																	new Date(item.created_at),
-																	'yyyy-MM-dd H:i:s',
-																)}
+																{format(new Date(item.created_at), 'yyyy-MM-dd HH:mm:ss')}
 															</div>
 														</div>
-
-														<div className='msg-text'>
-															<div
-																dangerouslySetInnerHTML={{
-																	__html: item.message,
-																}}
-															/>
-														</div>
+														<div
+															className='msg-text'
+															dangerouslySetInnerHTML={{ __html: item.message }}
+														/>
 													</div>
 												</div>
 											))
 										) : (
-											<h4> No Chat Found !!</h4>
+											<h4>No Chat Found !!</h4>
 										)}
-
-										{/*
-    <div className="msg right-msg">
-      <div className="msg-bubble">
-        <div className="msg-info">
-          <div className="msg-info-name">Sajad</div>
-          <div className="msg-info-time">12:46</div>
-        </div>
-        <div className="msg-text">
-          You can change your name in JS section!
-        </div>
-      </div>
-    </div>
-	*/}
 									</main>
 								</section>
 							</CardBody>
 						</Card>
 
 						<Card stretch>
-							<CardBody className=''>
-								<form className='row g-4' id='leadForm'>
+							<CardBody>
+								<form className='row g-4'>
 									<div className='col-12'>
-										{/* 
-										<textarea
-											className='form-control'
-											name="description"
-											rows={3}
-											id='name'
-											value={lead.description} 
-											onChange={e => onTextFieldChange(e)}
-
-										></textarea>
-										*/}
-
 										<Editor
 											name='description'
-											onChange={(data) => {
-												setEditorData(data);
-											}}
+											onChange={(data) => setEditorData(data)}
 											editorLoaded={editorLoaded}
-											value={lead.description}
+											value={editorData}
 										/>
 									</div>
 
-									<div className='col-md-12 col-xs-12'>
-										<Button
-											color='info'
-											className=' py-6'
-											onClick={(e) => onFormSubmit(e)}>
+									<div className='col-12'>
+										<Button color='info' onClick={onFormSubmit}>
 											Send
 										</Button>
 									</div>
@@ -305,6 +258,7 @@ const Chat = () => {
 							</CardBody>
 						</Card>
 					</div>
+
 				</div>
 			</Page>
 		</PageWrapper>
