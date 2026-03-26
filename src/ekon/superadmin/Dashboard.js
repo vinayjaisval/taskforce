@@ -9,7 +9,6 @@ import Card, { CardBody, CardFooter, CardHeader } from '../../components/bootstr
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import BASE_URL from "../../config/api";
-// == Status
 
 const Dashboard = () => {
 	const id = localStorage.getItem('sess_id');
@@ -64,11 +63,8 @@ const Dashboard = () => {
 		}
 	}
 
-	function resizeIframe(obj) {
-		obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
-	}
-
 	useMinimizeAside();
+
 	return (
 		<PageWrapper title={dashboardMenu.dashboard.text}>
 			<SubHeader>
@@ -76,10 +72,7 @@ const Dashboard = () => {
 					<Breadcrumb
 						list={[
 							{ title: 'Home', to: '#' },
-							{
-								title: 'Dashboard',
-								to: '#',
-							},
+							{ title: 'Dashboard', to: '#' },
 						]}
 					/>
 				</SubHeaderLeft>
@@ -88,144 +81,140 @@ const Dashboard = () => {
 			<Page>
 				<div id='bootstrap' className='row scroll-margin'>
 					<div className='col-md-12'>
+
+						{/* ✅ FIXED IFRAME */}
 						<Card stretch>
-							<CardHeader className=''>
+							<CardHeader>
 								<h4>Users Task Status</h4>
 							</CardHeader>
-							<CardBody className=''>
-								<iframe
-									height={500}
-									width='100%'
-									onLoad={(e) => resizeIframe(e, this)}
-									src='https://task.mycrmdesk.com/report'></iframe>
+						  <CardBody className="text-center">
+								<h5>Users Task Status</h5>
+								<p>This report cannot be embedded due to security restrictions.</p>
+
+								<a
+									href="https://task.mycrmdesk.com/report"
+									target="_blank"
+									rel="noopener noreferrer"
+									className="btn btn-primary"
+								>
+									Open Report
+								</a>
 							</CardBody>
 						</Card>
 
 						<Card stretch>
-							<CardHeader className=''>
+							<CardHeader>
 								<h4>User Wise Task</h4>
 							</CardHeader>
 							<CardBody className='row'>
-								{users && users.length > 0
-									? users.map((item, index) => (
-											<div className='col-md-2 col-xs-12' key={index}>
-												<Card stretch>
-													<CardHeader className=''>
-														<b>{item.name}</b>
-													</CardHeader>
-													<CardBody className=''>
-														Users Task <br />
-													</CardBody>
-													<CardFooter className=''>
-														<Link
-															to={'/superadmin/user-task/' + item.id}>
-															Task List
-														</Link>
-													</CardFooter>
-												</Card>
-											</div>
-									  ))
-									: ''}
+								{users?.length > 0 &&
+									users.map((item, index) => (
+										<div className='col-md-2 col-xs-12' key={index}>
+											<Card stretch>
+												<CardHeader>
+													<b>{item.name}</b>
+												</CardHeader>
+												<CardBody>
+													Users Task <br />
+												</CardBody>
+												<CardFooter>
+													<Link to={'/superadmin/user-task/' + item.id}>
+														Task List
+													</Link>
+												</CardFooter>
+											</Card>
+										</div>
+									))}
 							</CardBody>
 						</Card>
 
 						<Card stretch>
-							<CardHeader className=''>
+							<CardHeader>
 								<h4>Project Status</h4>
 							</CardHeader>
 							<CardBody className='row'>
-								{departmentCount && departmentCount.length > 0
-									? departmentCount.map((item, index) => (
-											<div className='col-md-2 col-xs-12' key={index}>
-												<Card stretch>
-													<CardHeader className=''>
-														<b>{item.userid}</b>
-														{parseFloat(
-															(item.countID / item.total_task) * 100,
-														).toFixed(2)}
-														%
-													</CardHeader>
-													<CardBody className=''>
-														Total Task:- <b>{item.total_task}</b> <br />
-														Task Created:- <b>{item.countID}</b> <br />
-													</CardBody>
-													<CardFooter className=''>
-														<Link
-															to={
-																'/superadmin/project-task/' +
-																item.project
-															}>
-															Task List
-														</Link>
-													</CardFooter>
-												</Card>
-											</div>
-									  ))
-									: ''}
+								{departmentCount?.length > 0 &&
+									departmentCount.map((item, index) => (
+										<div className='col-md-2 col-xs-12' key={index}>
+											<Card stretch>
+												<CardHeader>
+													<b>{item.userid}</b>
+													{" "}
+													{item.total_task
+														? ((item.countID / item.total_task) * 100).toFixed(2)
+														: 0}
+													%
+												</CardHeader>
+												<CardBody>
+													Total Task:- <b>{item.total_task}</b> <br />
+													Task Created:- <b>{item.countID}</b> <br />
+												</CardBody>
+												<CardFooter>
+													<Link
+														to={'/superadmin/project-task/' + item.project}>
+														Task List
+													</Link>
+												</CardFooter>
+											</Card>
+										</div>
+									))}
 							</CardBody>
 						</Card>
 
 						<Card stretch>
-							<CardHeader className=''>
+							<CardHeader>
 								<h4>Task Status</h4>
 							</CardHeader>
 							<CardBody className='row'>
-								{statusCount && statusCount.length > 0
-									? statusCount.map((item, index) => (
-											<div className='col-md-2 col-xs-6' key={index}>
-												<Card stretch>
-													<CardHeader className=''>
-														<b>{item.name}</b>
-													</CardHeader>
-													<CardBody className=''>
-														<h4>{item.countID}</h4>
-													</CardBody>
-													<CardFooter className=''>
-														<Link
-															to={
-																'/superadmin/status-task/' +
-																item.status
-															}>
-															Task List
-														</Link>
-													</CardFooter>
-												</Card>
-											</div>
-									  ))
-									: ''}
+								{statusCount?.length > 0 &&
+									statusCount.map((item, index) => (
+										<div className='col-md-2 col-xs-6' key={index}>
+											<Card stretch>
+												<CardHeader>
+													<b>{item.name}</b>
+												</CardHeader>
+												<CardBody>
+													<h4>{item.countID}</h4>
+												</CardBody>
+												<CardFooter>
+													<Link
+														to={'/superadmin/status-task/' + item.status}>
+														Task List
+													</Link>
+												</CardFooter>
+											</Card>
+										</div>
+									))}
 							</CardBody>
 						</Card>
 
 						<Card stretch>
-							<CardHeader className=''>
+							<CardHeader>
 								<h4>Task Category</h4>
 							</CardHeader>
 							<CardBody className='row'>
-								{categoryCount && categoryCount.length > 0
-									? categoryCount.map((item, index) => (
-											<div className='col-md-2 col-xs-6' key={index}>
-												<Card stretch>
-													<CardHeader className=''>
-														<b>{item.name}</b>
-													</CardHeader>
-													<CardBody className=''>
-														<h4>{item.countID}</h4>
-													</CardBody>
-													<CardFooter className=''>
-														<Link
-															to={
-																'/superadmin/category-task/' +
-																item.category
-															}>
-															Task List
-														</Link>
-													</CardFooter>
-												</Card>
-											</div>
-									  ))
-									: ''}
+								{categoryCount?.length > 0 &&
+									categoryCount.map((item, index) => (
+										<div className='col-md-2 col-xs-6' key={index}>
+											<Card stretch>
+												<CardHeader>
+													<b>{item.name}</b>
+												</CardHeader>
+												<CardBody>
+													<h4>{item.countID}</h4>
+												</CardBody>
+												<CardFooter>
+													<Link
+														to={'/superadmin/category-task/' + item.category}>
+														Task List
+													</Link>
+												</CardFooter>
+											</Card>
+										</div>
+									))}
 							</CardBody>
 						</Card>
+
 					</div>
 				</div>
 			</Page>
