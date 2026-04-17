@@ -73,7 +73,7 @@ const Dashboard = () => {
 									width='100%'
 									height={500}
 									src={
-										'https://task.mycrmdesk.com/backend/report?project=' + id
+										'https://task.mycrmdesk.com/report?project=' + id
 									}></iframe>
 							</CardBody>
 						</Card>

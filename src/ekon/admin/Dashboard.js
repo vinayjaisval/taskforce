@@ -25,6 +25,8 @@ const Dashboard = () => {
 				const userApi = await axios.get(
 					`${BASE_URL}/admin/all-agent-list-data-admin/${id}`,
 				);
+
+				console.log(userApi.data);
 				setUsers(userApi.data);
 			} catch (error) {
 				console.log('Something is Wrong 1');
@@ -54,6 +56,7 @@ const Dashboard = () => {
 				const departmentCountApi = await axios.get(
 					`${BASE_URL}/admin/all-department-count/${id}`,
 				);
+				console.log(departmentCountApi.data);
 				setDepartmentCount(departmentCountApi.data);
 			} catch (error) {
 				console.log('Something is Wrong');
@@ -90,14 +93,19 @@ const Dashboard = () => {
 							<CardHeader className=''>
 								<h4>Users Task Status</h4>
 							</CardHeader>
-							<CardBody className=''>
-								<iframe
-									width='100%'
-									height={500}
-									src={
-										'https://task.mycrmdesk.com/backend/report?id=' + id
-									}></iframe>
-							</CardBody>
+							<CardBody className="text-center">
+															<h5>Users Task Status</h5>
+															<p>This report cannot be embedded due to security restrictions.</p>
+							
+															<a
+																href="https://task.mycrmdesk.com/report"
+																target="_blank"
+																rel="noopener noreferrer"
+																className="btn btn-primary"
+															>
+																Open Report
+															</a>
+														</CardBody>
 						</Card>
 
 						<Card stretch>

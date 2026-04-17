@@ -54,9 +54,11 @@ const Dashboard = () => {
 
 	async function getDepartmentCount() {
 		try {
+			
 			const departmentCountApi = await axios.get(
 				`${BASE_URL}/admin/all-department-count/${id}`,
 			);
+			
 			setDepartmentCount(departmentCountApi.data);
 		} catch (error) {
 			console.log('Something is Wrong');
@@ -135,6 +137,7 @@ const Dashboard = () => {
 							<CardBody className='row'>
 								{departmentCount?.length > 0 &&
 									departmentCount.map((item, index) => (
+										console.log(item),
 										<div className='col-md-2 col-xs-12' key={index}>
 											<Card stretch>
 												<CardHeader>
