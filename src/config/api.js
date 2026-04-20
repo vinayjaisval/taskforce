@@ -1,3 +1,3 @@
-const BASE_URL = "http://localhost:8888/taskcrmbackend/backend/api";
+const BASE_URL = "https://task.mycrmdesk.com/backend/api";
 
 export default BASE_URL;

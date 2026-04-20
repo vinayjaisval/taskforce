@@ -30,7 +30,7 @@ const LogTask = () => {
 		remarks: '',
 		newremarks: '',
 	});
-
+	const [logLoading, setLogLoading] = useState(true);
 	const [sourceList, setSourceList] = useState([]);
 	const [categoryList, setCategoryList] = useState([]);
 	//const [assigneeList, setAssigneeList] = useState([]);
@@ -155,17 +155,27 @@ const LogTask = () => {
 	}, [id]);
 
 	useEffect(() => {
-		async function getTaskLog() {
-			try {
-				const logApi = await axios.get(`${BASE_URL}/admin/leads-log/${id}`);
-				setLogList(logApi.data.data);
-			} catch (error) {
-				console.log('Something is Wrong -taskLog');
-			}
-		}
+  async function getTaskLog() {
+    setLogLoading(true);
+    console.log("API call start");
 
-		getTaskLog();
-	}, [id]);
+    try {
+      const logApi = await axios.get(`${BASE_URL}/admin/leads-log/${id}`);
+      
+      console.log("API response:", logApi.data);
+      console.log("DATA ARRAY:", logApi.data.data);
+
+      setLogList(logApi.data.data);
+    } catch (error) {
+      console.log('Something is Wrong -taskLog', error);
+    } finally {
+      console.log("API finished");
+      setLogLoading(false);
+    }
+  }
+
+  getTaskLog();
+}, [id]);
 
 	async function onTimerCal(e, leadIds) {
 		e.preventDefault();
@@ -177,7 +187,7 @@ const LogTask = () => {
 			document.getElementById('alert_message1').innerHTML =
 				'Your Time Updated. Please Refrese Page to see the Changes!!';
 			window.scrollTo({ top: 0, behavior: 'smooth' });
-		} catch (error) {}
+		} catch (error) { }
 	}
 
 	return (
@@ -282,8 +292,8 @@ const LogTask = () => {
 									<p>
 										{departmentList && departmentList.length > 0
 											? departmentList.map((item) =>
-													lead.project == item.id ? item.name : '',
-											  )
+												lead.project == item.id ? item.name : '',
+											)
 											: ''}
 									</p>
 								</div>
@@ -293,8 +303,8 @@ const LogTask = () => {
 									<p>
 										{sourceList && sourceList.length > 0
 											? sourceList.map((item) =>
-													lead.status == item.id ? item.name : '',
-											  )
+												lead.status == item.id ? item.name : '',
+											)
 											: ''}
 									</p>
 								</div>
@@ -304,8 +314,8 @@ const LogTask = () => {
 									<p>
 										{categoryList && categoryList.length > 0
 											? categoryList.map((item) =>
-													lead.category == item.id ? item.name : '',
-											  )
+												lead.category == item.id ? item.name : '',
+											)
 											: ''}
 									</p>
 								</div>
@@ -453,9 +463,21 @@ const LogTask = () => {
 								<h4>Log History</h4>
 							</CardHeader>
 							<CardBody style={{ maxHeight: '500px', overflow: 'auto' }}>
-								{logList && logList.length > 0 ? (
-									logList.map((item, index) => (
-										<>
+								{logLoading ? (
+									
+									<div className='text-center'>
+										<div className='loader'></div>
+									</div>
+								) :
+									logList.length === 0 ? (
+
+										<div className='text-center'>
+											NOT FOUND
+										</div>
+
+									) : (
+										logList.map((item, index) => (
+
 											<div className='abc' key={index + 1}>
 												<h6>
 													<b>{item.name}</b> change to{' '}
@@ -464,13 +486,13 @@ const LogTask = () => {
 												</h6>
 												<p>{item.remarks}</p>
 											</div>
-										</>
-									))
-								) : (
-									<div className='text-center'>
-										<div className='loader'></div>
-									</div>
-								)}
+
+										))
+										// ) : (
+										// 	<div className='text-center'>
+										// 		<div className='loader'></div>
+										// 	</div>
+									)}
 
 								<div className='col-md-12 col-xs-12'>&nbsp;</div>
 							</CardBody>

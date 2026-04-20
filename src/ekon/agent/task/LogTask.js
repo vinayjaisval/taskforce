@@ -472,7 +472,7 @@ const LogTask = () => {
 										</>
 									))
 								) : (
-									<div className='text-center'>
+									<div className='text-center'> 
 										<div className='loader'></div>
 									</div>
 								)}

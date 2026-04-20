@@ -16,6 +16,7 @@ import { useParams } from 'react-router-dom';
 import BASE_URL from "../../../config/api";
 
 const LogTask = () => {
+	
 	useMinimizeAside();
 
 	const userIds = localStorage.getItem('sess_id');
@@ -137,7 +138,7 @@ const LogTask = () => {
 			try {
 				const allLeadsApi = await axios.get(`${BASE_URL}/admin/edit-lead/${id}`);
 				setLead(allLeadsApi.data);
-
+				console.log("Lead API response:", allLeadsApi.data);
 				// Sel Subject list
 				try {
 					const selSubjectListApi = await axios.get(
@@ -172,12 +173,12 @@ const LogTask = () => {
 
 		try {
 			await axios.get(`${BASE_URL}/admin/timer-calculation/${userIds}/${leadIds}`);
-
+			console.log('Timer Updated');
 			document.getElementById('succ_message1').style.display = 'block';
 			document.getElementById('alert_message1').innerHTML =
 				'Your Time Updated. Please Refrese Page to see the Changes!!';
 			window.scrollTo({ top: 0, behavior: 'smooth' });
-		} catch (error) {}
+		} catch (error) { }
 	}
 
 	return (
@@ -248,7 +249,10 @@ const LogTask = () => {
 									<Button
 										color='info'
 										className='py-6'
-										onClick={(e) => onTimerCal(e, lead.id)}>
+										onClick={(e) => {
+											console.log("Button clicked 🔥");
+											onTimerCal(e, lead.id);
+										}}>
 										Start Timer
 									</Button>
 								)}
@@ -282,8 +286,8 @@ const LogTask = () => {
 									<p>
 										{departmentList && departmentList.length > 0
 											? departmentList.map((item) =>
-													lead.project == item.id ? item.name : '',
-											  )
+												lead.project == item.id ? item.name : '',
+											)
 											: ''}
 									</p>
 								</div>
@@ -293,8 +297,8 @@ const LogTask = () => {
 									<p>
 										{sourceList && sourceList.length > 0
 											? sourceList.map((item) =>
-													lead.status == item.id ? item.name : '',
-											  )
+												lead.status == item.id ? item.name : '',
+											)
 											: ''}
 									</p>
 								</div>
@@ -304,8 +308,8 @@ const LogTask = () => {
 									<p>
 										{categoryList && categoryList.length > 0
 											? categoryList.map((item) =>
-													lead.category == item.id ? item.name : '',
-											  )
+												lead.category == item.id ? item.name : '',
+											)
 											: ''}
 									</p>
 								</div>

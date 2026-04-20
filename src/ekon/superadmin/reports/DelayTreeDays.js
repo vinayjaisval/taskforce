@@ -16,7 +16,7 @@ const DelayThreeDay = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-
+	const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
@@ -24,7 +24,8 @@ const DelayThreeDay = () => {
 
 	useEffect(() => {
 		async function getAstroList(page) {
-			page = page;
+			setLoading(true);
+			// page = page;
 			try {
 				const astroListApi = await axios.get(
 					`${BASE_URL}/admin/leads_rep_del_three_day/${id}?page=` + page,
@@ -35,6 +36,8 @@ const DelayThreeDay = () => {
 				setOffset(astroListApi.data.offset);
 			} catch (error) {
 				console.log('Something is Wrong -astroList');
+			} finally {
+				setLoading(false);
 			}
 		}
 
@@ -42,14 +45,15 @@ const DelayThreeDay = () => {
 	}, [id]);
 
 	async function getPaginatedData(page) {
+		setLoading(true);
 		const keywordVal = document.getElementById('searchInput1').value;
 
 		try {
 			const astroListApi = await axios.get(
 				`${BASE_URL}/admin/leads_rep_del_three_day/${id}?page=` +
-					page +
-					`&keywords=` +
-					keywordVal,
+				page +
+				`&keywords=` +
+				keywordVal,
 			);
 			setAstroList(astroListApi.data.data);
 			setTotalRecords(astroListApi.data.total);
@@ -57,12 +61,15 @@ const DelayThreeDay = () => {
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
 			console.log('Something is Wrong -astroList Pagination');
+		} finally {
+			setLoading(false);
 		}
 	}
 
 	const [search, setSearch] = useState({ keywords: '' });
 
 	async function onTextFieldChange(e) {
+		setLoading(true);
 		setSearch({
 			...search,
 			[e.target.name]: e.target.value,
@@ -78,6 +85,8 @@ const DelayThreeDay = () => {
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
 			console.log('Something is Wrong -allLeads');
+		} finally {
+			setLoading(false);
 		}
 	}
 
@@ -141,7 +150,22 @@ const DelayThreeDay = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{astroList && astroList.length > 0 ? (
+										{loading ? (
+											<tr>
+												<td colSpan={7}>
+													<div className='text-center'>
+														<div className='loader'></div>
+													</div>
+												</td>
+											</tr>
+										) : 
+										astroList.length === 0 ? (
+											<tr>
+												<td colspan={7} className='text-center'>
+													NOT FOUND
+												</td>
+											</tr>
+										) : (
 											astroList.map((item, index) => (
 												<tr key={index + 1}>
 													<td scope='col'>{index + 1 + offset}</td>
@@ -153,14 +177,14 @@ const DelayThreeDay = () => {
 													<td scope='col'>{item.remarks}</td>
 												</tr>
 											))
-										) : (
-											<tr>
-												<td colSpan={7}>
-													<div className='text-center'>
-														<div className='loader'></div>
-													</div>
-												</td>
-											</tr>
+										// ) : (
+										// 	<tr>
+										// 		<td colSpan={7}>
+										// 			<div className='text-center'>
+										// 				<div className='loader'></div>
+										// 			</div>
+										// 		</td>
+										// 	</tr>
 										)}
 									</tbody>
 								</table>

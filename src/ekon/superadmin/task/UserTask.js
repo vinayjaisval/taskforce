@@ -28,14 +28,15 @@ const UserTask = () => {
 	useMinimizeAside();
 
 	const { id } = useParams();
-
+const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
 
 	useEffect(() => {
 		async function getAstroList(page) {
-			page = page;
+			setLoading(true);
+			// page = page;
 			try {
 				const astroListApi = await axios.get(
 					`${BASE_URL}/admin/leads_users_list/${id}?page=` + page,
@@ -46,12 +47,16 @@ const UserTask = () => {
 			} catch (error) {
 				console.log('Something is Wrong -astroList');
 			}
+			finally{
+				setLoading(false);
+			}
 		}
 
 		getAstroList(1);
 	}, [id]);
 
 	async function getPaginatedData(page) {
+		setLoading(true);
 		const keywordVal = document.getElementById('searchInput1').value;
 
 		try {
@@ -63,6 +68,9 @@ const UserTask = () => {
 			setLimit(astroListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -astroList Pagination');
+		}
+		finally{
+			setLoading(false);
 		}
 	}
 
@@ -80,6 +88,7 @@ const UserTask = () => {
 	});
 
 	async function onTextFieldChange(e) {
+		setLoading(true);
 		setSearch({
 			...search,
 			[e.target.name]: e.target.value,
@@ -93,7 +102,10 @@ const UserTask = () => {
 			setLimit(astroListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -allLeads');
+		} finally{
+			setLoading(false);
 		}
+		
 	}
 
 	return (
@@ -172,7 +184,23 @@ const UserTask = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{astroList && astroList.length > 0 ? (
+										{loading ? (
+											<tr>
+												<td colSpan={9}>
+													<div className='text-center'>
+														<div className='loader'></div>
+													</div>
+												</td>
+											</tr>
+										) :
+											astroList.length === 0 ? (
+												<tr>
+													<td colSpan={9} className='text-center'>
+														NOT FOUND
+													</td>
+												</tr>
+											) : (
+										// {astroList && astroList.length > 0 ? (
 											astroList.map((item, index) => (
 												<tr key={index + 1}>
 													<td scope='col'>#{item.id}</td>
@@ -236,14 +264,14 @@ const UserTask = () => {
 													</td>
 												</tr>
 											))
-										) : (
-											<tr>
-												<td colSpan={9}>
-													<div className='text-center'>
-														<div className='loader'></div>
-													</div>
-												</td>
-											</tr>
+										// ) : (
+										// 	<tr>
+										// 		<td colSpan={9}>
+										// 			<div className='text-center'>
+										// 				<div className='loader'></div>
+										// 			</div>
+										// 		</td>
+										// 	</tr>
 										)}
 									</tbody>
 								</table>

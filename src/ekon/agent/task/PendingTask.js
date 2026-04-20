@@ -19,7 +19,7 @@ const PendingTask = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-
+	const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
@@ -27,7 +27,8 @@ const PendingTask = () => {
 
 	useEffect(() => {
 		async function getAstroList(page) {
-			page = page;
+			setLoading(true);
+			// page = page;
 			try {
 				const astroListApi = await axios.get(
 					`${BASE_URL}/admin/leads_pending/${id}?page=` + page,
@@ -39,12 +40,16 @@ const PendingTask = () => {
 			} catch (error) {
 				console.log('Something is Wrong -astroList');
 			}
+			finally {
+				setLoading(false);
+			}
 		}
 
 		getAstroList(1);
 	}, [id]);
 
 	async function getPaginatedData(page) {
+		setLoading(true);
 		const keywordVal = document.getElementById('searchInput1').value;
 
 		try {
@@ -58,6 +63,9 @@ const PendingTask = () => {
 		} catch (error) {
 			console.log('Something is Wrong -astroList Pagination');
 		}
+		finally {
+			setLoading(false);
+		}
 	}
 
 	const [search, setSearch] = useState({
@@ -65,6 +73,7 @@ const PendingTask = () => {
 	});
 
 	async function onTextFieldChange(e) {
+		setLoading(true);
 		setSearch({
 			...search,
 			[e.target.name]: e.target.value,
@@ -79,6 +88,9 @@ const PendingTask = () => {
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
 			console.log('Something is Wrong -allLeads');
+		}
+		finally {
+			setLoading(false);
 		}
 	}
 
@@ -157,37 +169,52 @@ const PendingTask = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{astroList && astroList.length > 0 ? (
-											astroList.map((item, index) => (
-												<tr key={index + 1}>
-													<td scope='col'>{index + 1 + offset}</td>
-													<td scope='col'>{item.name}</td>
-													<td scope='col'>{item.source_name}</td>
-													<td scope='col'>{item.category_id_name}</td>
-													<td scope='col'>{item.dedline}</td>
-													<td scope='col'>{item.assignee}</td>
-													<td scope='col'>{item.remarks}</td>
-													<td>
-														<Link to={'/agent/task-log/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='FollowTheSigns'>
-																Follow
-															</Button>
-														</Link>
-													</td>
-												</tr>
-											))
-										) : (
+										{loading ? (
 											<tr>
-												<td colSpan={8}>
+												<td colSpan={10}>
 													<div className='text-center'>
 														<div className='loader'></div>
 													</div>
 												</td>
 											</tr>
-										)}
+										) :
+											astroList.length === 0 ? (
+												<tr>
+													<td colSpan={10} className='text-center'>
+														NOT FOUND
+													</td>
+												</tr>
+											) : (
+												astroList.map((item, index) => (
+													<tr key={index + 1}>
+														<td scope='col'>{index + 1 + offset}</td>
+														<td scope='col'>{item.name}</td>
+														<td scope='col'>{item.source_name}</td>
+														<td scope='col'>{item.category_id_name}</td>
+														<td scope='col'>{item.dedline}</td>
+														<td scope='col'>{item.assignee}</td>
+														<td scope='col'>{item.remarks}</td>
+														<td>
+															<Link to={'/agent/task-log/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='FollowTheSigns'>
+																	Follow
+																</Button>
+															</Link>
+														</td>
+													</tr>
+												))
+												// ) : (
+												// 	<tr>
+												// 		<td colSpan={8}>
+												// 			<div className='text-center'>
+												// 				<div className='loader'></div>
+												// 			</div>
+												// 		</td>
+												// 	</tr>
+											)}
 									</tbody>
 								</table>
 							</CardBody>

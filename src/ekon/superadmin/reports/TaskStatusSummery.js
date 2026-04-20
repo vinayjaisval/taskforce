@@ -19,13 +19,14 @@ const TaskStatusSummery = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-
+	const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
 
 	useEffect(() => {
 		async function getAstroList(page) {
+			setLoading(true);
 			page = page;
 			try {
 				const astroListApi = await axios.get(`${BASE_URL}/admin/leads/${id}?page=` + page);
@@ -34,6 +35,8 @@ const TaskStatusSummery = () => {
 				setLimit(astroListApi.data.limit);
 			} catch (error) {
 				console.log('Something is Wrong -astroList');
+			} finally{
+				setLoading(false);
 			}
 		}
 
@@ -41,6 +44,7 @@ const TaskStatusSummery = () => {
 	}, [id]);
 
 	async function getPaginatedData(page) {
+		setLoading(true);
 		const keywordVal = document.getElementById('searchInput1').value;
 
 		try {
@@ -52,6 +56,8 @@ const TaskStatusSummery = () => {
 			setLimit(astroListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -astroList Pagination');
+		} finally {
+			setLoading(false);
 		}
 	}
 
@@ -60,6 +66,7 @@ const TaskStatusSummery = () => {
 	});
 
 	async function onTextFieldChange(e) {
+		setLoading(true);
 		setSearch({
 			...search,
 			[e.target.name]: e.target.value,
@@ -74,6 +81,8 @@ const TaskStatusSummery = () => {
 			setLimit(astroListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -allLeads');
+		} finally{
+			setLoading(false);
 		}
 	}
 
@@ -136,7 +145,22 @@ const TaskStatusSummery = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{astroList && astroList.length > 0 ? (
+										{loading ? (
+											<tr>
+												<td colSpan={7}>
+													<div className='text-center'>
+														<div className='loader'></div>
+													</div>
+												</td>
+											</tr>
+										) :
+										 astroList.length === 0 ? (
+											<tr>
+											<td colSpan={7} className='text-center'>
+												NOT FOUND
+												</td>
+											</tr>
+										 ) : (
 											astroList.map((item, index) => (
 												<tr key={index + 1}>
 													<td scope='col'>#{item.id}</td>
@@ -149,14 +173,14 @@ const TaskStatusSummery = () => {
 													</td>
 												</tr>
 											))
-										) : (
-											<tr>
-												<td colSpan={7}>
-													<div className='text-center'>
-														<div className='loader'></div>
-													</div>
-												</td>
-											</tr>
+										// ) : (
+										// 	<tr>
+										// 		<td colSpan={7}>
+										// 			<div className='text-center'>
+										// 				<div className='loader'></div>
+										// 			</div>
+										// 		</td>
+										// 	</tr>
 										)}
 									</tbody>
 								</table>
