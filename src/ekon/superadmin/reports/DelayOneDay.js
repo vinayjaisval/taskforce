@@ -16,7 +16,7 @@ const DelayOneDay = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
@@ -51,9 +51,9 @@ const [loading, setLoading] = useState(true);
 		try {
 			const astroListApi = await axios.get(
 				`${BASE_URL}/admin/leads_rep_del_one_day/${id}?page=` +
-					page +
-					`&keywords=` +
-					keywordVal,
+				page +
+				`&keywords=` +
+				keywordVal,
 			);
 			setAstroList(astroListApi.data.data);
 			setTotalRecords(astroListApi.data.total);
@@ -61,7 +61,7 @@ const [loading, setLoading] = useState(true);
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
 			console.log('Something is Wrong -astroList Pagination');
-		} finally{
+		} finally {
 			setLoading(false);
 		}
 	}
@@ -152,12 +152,12 @@ const [loading, setLoading] = useState(true);
 									<tbody>
 										{loading ? (
 											<tr>
-										// 		<td colSpan={7}>
-										// 			<div className='text-center'>
-										// 				<div className='loader'></div>
-										// 			</div>
-										// 		</td>
-										// 	</tr>
+												<td colSpan={7}>
+													<div className='text-center'>
+														<div className='loader'></div>
+													</div>
+												</td>
+											</tr>
 										) :
 											astroList.length === 0 ? (
 												<tr>
@@ -166,27 +166,27 @@ const [loading, setLoading] = useState(true);
 													</td>
 												</tr>
 											) : (
-										// {astroList && astroList.length > 0 ? (
-											astroList.map((item, index) => (
-												<tr key={index + 1}>
-													<td scope='col'>{index + 1 + offset}</td>
-													<td scope='col'>{item.name}</td>
-													<td scope='col'>{item.source_name}</td>
-													<td scope='col'>{item.category_id_name}</td>
-													<td scope='col'>{item.dedline}</td>
-													<td scope='col'>{item.assignee}</td>
-													<td scope='col'>{item.remarks}</td>
-												</tr>
-											))
-										// ) : (
-										// 	<tr>
-										// 		<td colSpan={7}>
-										// 			<div className='text-center'>
-										// 				<div className='loader'></div>
-										// 			</div>
-										// 		</td>
-										// 	</tr>
-										)}
+												// {astroList && astroList.length > 0 ? (
+												astroList.map((item, index) => (
+													<tr key={index + 1}>
+														<td scope='col'>{index + 1 + offset}</td>
+														<td scope='col'>{item.name}</td>
+														<td scope='col'>{item.source_name}</td>
+														<td scope='col'>{item.category_id_name}</td>
+														<td scope='col'>{item.dedline}</td>
+														<td scope='col'>{item.assignee}</td>
+														<td scope='col'>{item.remarks}</td>
+													</tr>
+												))
+												// ) : (
+												// 	<tr>
+												// 		<td colSpan={7}>
+												// 			<div className='text-center'>
+												// 				<div className='loader'></div>
+												// 			</div>
+												// 		</td>
+												// 	</tr>
+											)}
 									</tbody>
 								</table>
 							</CardBody>
