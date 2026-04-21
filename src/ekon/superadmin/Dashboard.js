@@ -52,18 +52,15 @@ const Dashboard = () => {
 		}
 	}
 
-	async function getDepartmentCount() {
+	const getDepartmentCount = async () => {
 		try {
-			
-			const departmentCountApi = await axios.get(
-				`${BASE_URL}/admin/all-department-count/${id}`,
-			);
-			
-			setDepartmentCount(departmentCountApi.data);
-		} catch (error) {
-			console.log('Something is Wrong');
+			const res = await axios.get(`${BASE_URL}/admin/all-department-count/${id}`);
+			console.log("departmentCount API:", res.data);
+			setDepartmentCount(res.data.data || []);
+		} catch {
+			console.log("Department Error");
 		}
-	}
+	};
 
 	useMinimizeAside();
 
@@ -117,7 +114,9 @@ const Dashboard = () => {
 													<b>{item.name}</b>
 												</CardHeader>
 												<CardBody>
-													Users Task <br />
+													Total Project:- <br />
+
+													<h4>{item.total_projects}</h4>
 												</CardBody>
 												<CardFooter>
 													<Link to={'/superadmin/user-task/' + item.id}>

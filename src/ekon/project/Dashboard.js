@@ -68,14 +68,7 @@ const Dashboard = () => {
 							<CardHeader className=''>
 								<h4>Users Task Status</h4>
 							</CardHeader>
-							<CardBody className=''>
-								<iframe
-									width='100%'
-									height={500}
-									src={
-										'https://task.mycrmdesk.com/report?project=' + id
-									}></iframe>
-							</CardBody>
+							
 						</Card>
 
 						<Card stretch>
@@ -90,9 +83,7 @@ const Dashboard = () => {
 													<CardHeader className=''>
 														<b>{item.name}</b>
 													</CardHeader>
-													<CardBody className=''>
-														Total Task:- <b>-</b> <br />
-													</CardBody>
+													
 													<CardFooter className=''>
 														<Link to={'/project/user-task/' + item.id}>
 															Task List

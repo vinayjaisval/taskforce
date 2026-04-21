@@ -177,7 +177,7 @@ const [loading, setLoading] = useState(true);
 											<th>Status</th>
 											<th>Category</th>
 											<th>Deadline</th>
-											<th>Assignee</th>
+											<th>Project</th>
 											<th width='120'></th>
 											<th width='120'></th>
 											<th width='1'></th>
@@ -209,7 +209,7 @@ const [loading, setLoading] = useState(true);
 													<td scope='col'>{item.category_id_name}</td>
 													<td scope='col'>{item.dedline}</td>
 													<td scope='col'>
-														<Assignee id={item.assignee} />
+														<Assignee id={item.project} />
 													</td>
 													<td>
 														<Link
