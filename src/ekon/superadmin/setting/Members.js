@@ -20,7 +20,7 @@ const Members = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-
+	const [loading, setLoading] = useState(true);
 	const [memberList, setMemberList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
@@ -28,7 +28,8 @@ const Members = () => {
 
 	useEffect(() => {
 		async function getMemberList(page) {
-			page = page;
+			setLoading(true);
+			// page = page;
 			try {
 				const memberListApi = await axios.get(
 					`${BASE_URL}/admin/all_memebr_list?page=` + page,
@@ -39,6 +40,8 @@ const Members = () => {
 				setOffset(memberListApi.data.offset);
 			} catch (error) {
 				console.log('Something is Wrong -memberList');
+			} finally {
+				setLoading(false);
 			}
 		}
 
@@ -46,6 +49,7 @@ const Members = () => {
 	}, [id]);
 
 	async function getPaginatedData(page) {
+		setLoading(true);
 		try {
 			const memberListApi = await axios.get(`${BASE_URL}/admin/all_memebr_list?page=` + page);
 			setMemberList(memberListApi.data.data);
@@ -53,6 +57,8 @@ const Members = () => {
 			setLimit(memberListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -memberList Pagination');
+		} finally {
+			setLoading(false);
 		}
 	}
 
@@ -131,52 +137,7 @@ const Members = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{memberList && memberList.length > 0 ? (
-											memberList.map((item, index) => (
-												<tr key={index + 1}>
-													<td scope='col'>{index + 1 + offset}</td>
-													<td scope='col'>{item.name}</td>
-													<td scope='col'>{item.userid}</td>
-													<td scope='col'>{item.email}</td>
-													<td scope='col'>{item.phone}</td>
-													<td scope='col'>{item.user_type}</td>
-													<td scope='col'>
-														{item.status == '1' ? (
-															<Button
-																color='primary'
-																isLight
-																icon='Send'
-																onClick={(e) =>
-																	handleBlock(e, item.id)
-																}>
-																Active
-															</Button>
-														) : (
-															<Button
-																color='danger'
-																isLight
-																icon='Send'
-																onClick={(e) =>
-																	handleActive(e, item.id)
-																}>
-																Blocked
-															</Button>
-														)}
-													</td>
-													<td>
-														<Button
-															color='warning'
-															isLight
-															icon='Send'
-															onClick={(e) =>
-																handleLogin(e, item.id)
-															}>
-															Login
-														</Button>
-													</td>
-												</tr>
-											))
-										) : (
+										{loading ? (
 											<tr>
 												<td colSpan={8}>
 													<div className='text-center'>
@@ -184,7 +145,67 @@ const Members = () => {
 													</div>
 												</td>
 											</tr>
-										)}
+										) :
+											memberList.length === 0 ? (
+												<tr>
+													<td colSpan={8} className='text-center'>
+														NOT FOUND
+													</td>
+												</tr>
+											) : (
+												memberList.map((item, index) => (
+													<tr key={index + 1}>
+														<td scope='col'>{index + 1 + offset}</td>
+														<td scope='col'>{item.name}</td>
+														<td scope='col'>{item.userid}</td>
+														<td scope='col'>{item.email}</td>
+														<td scope='col'>{item.phone}</td>
+														<td scope='col'>{item.user_type}</td>
+														<td scope='col'>
+															{item.status == '1' ? (
+																<Button
+																	color='primary'
+																	isLight
+																	icon='Send'
+																	onClick={(e) =>
+																		handleBlock(e, item.id)
+																	}>
+																	Active
+																</Button>
+															) : (
+																<Button
+																	color='danger'
+																	isLight
+																	icon='Send'
+																	onClick={(e) =>
+																		handleActive(e, item.id)
+																	}>
+																	Blocked
+																</Button>
+															)}
+														</td>
+														<td>
+															<Button
+																color='warning'
+																isLight
+																icon='Send'
+																onClick={(e) =>
+																	handleLogin(e, item.id)
+																}>
+																Login
+															</Button>
+														</td>
+													</tr>
+												))
+												// ) : (
+												// 	<tr>
+												// 		<td colSpan={8}>
+												// 			<div className='text-center'>
+												// 				<div className='loader'></div>
+												// 			</div>
+												// 		</td>
+												// 	</tr>
+											)}
 									</tbody>
 								</table>
 							</CardBody>

@@ -25,7 +25,7 @@ const Teamlead = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-
+const [loading, setLoading] = useState(true);
 	const [agentList, setAgentList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
@@ -89,7 +89,8 @@ const Teamlead = () => {
 
 	useEffect(() => {
 		async function getAgentList(page) {
-			page = page;
+			setLoading(true);
+			// page = page;
 			try {
 				const agentListApi = await axios.get(`${BASE_URL}/admin/teamleads?page=` + page);
 				setAgentList(agentListApi.data.data);
@@ -98,6 +99,8 @@ const Teamlead = () => {
 				setOffset(agentListApi.data.offset);
 			} catch (error) {
 				console.log('Something is Wrong -question');
+			} finally{
+				setLoading(false);
 			}
 		}
 
@@ -105,6 +108,7 @@ const Teamlead = () => {
 	}, [id]);
 
 	async function getPaginatedData(page) {
+		setLoading(true);
 		try {
 			const agentListApi = await axios.get(`${BASE_URL}/admin/teamleads?page=` + page);
 			setAgentList(agentListApi.data.data);
@@ -112,6 +116,8 @@ const Teamlead = () => {
 			setLimit(agentListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -question Pagination');
+		} finally{
+			setLoading(false);
 		}
 	}
 
@@ -305,7 +311,22 @@ const Teamlead = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{agentList && agentList.length > 0 ? (
+										{loading ? (
+											<tr>
+												<td colSpan={8}>
+													<div className='text-center'>
+														<div className='loader'></div>
+													</div>
+												</td>
+											</tr>
+										) :
+										 agentList.length === 0 ? (
+											<tr>
+												<td colspan={8} className='text-center'>
+													NOT FOUND
+												</td>
+											</tr>
+										 ) : (
 											agentList.map((item, index) => (
 												<tr key={index + 1}>
 													<td scope='col'>{index + 1 + offset}</td>
@@ -348,14 +369,14 @@ const Teamlead = () => {
 													</td>
 												</tr>
 											))
-										) : (
-											<tr>
-												<td colSpan={8}>
-													<div className='text-center'>
-														<div className='loader'></div>
-													</div>
-												</td>
-											</tr>
+										// ) : (
+										// 	<tr>
+										// 		<td colSpan={8}>
+										// 			<div className='text-center'>
+										// 				<div className='loader'></div>
+										// 			</div>
+										// 		</td>
+										// 	</tr>
 										)}
 									</tbody>
 								</table>

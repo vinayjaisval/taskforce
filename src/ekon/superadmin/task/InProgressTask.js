@@ -24,7 +24,7 @@ const InProgressTask = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-
+const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
@@ -32,7 +32,8 @@ const InProgressTask = () => {
 
 	useEffect(() => {
 		async function getAstroList(page) {
-			page = page;
+			setLoading(true);
+			// page = page;
 			try {
 				const astroListApi = await axios.get(
 					`${BASE_URL}/admin/leads_inprogress/${id}?page=` + page,
@@ -43,6 +44,8 @@ const InProgressTask = () => {
 				setOffset(astroListApi.data.offset);
 			} catch (error) {
 				console.log('Something is Wrong -astroList');
+			} finally {
+				setLoading(false);
 			}
 		}
 
@@ -50,6 +53,7 @@ const InProgressTask = () => {
 	}, [id]);
 
 	async function getPaginatedData(page) {
+		setLoading(true);
 		const keywordVal = document.getElementById('searchInput1').value;
 
 		try {
@@ -62,6 +66,8 @@ const InProgressTask = () => {
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
 			console.log('Something is Wrong -astroList Pagination');
+		} finally{
+			setLoading(false);
 		}
 	}
 
@@ -79,6 +85,7 @@ const InProgressTask = () => {
 	});
 
 	async function onTextFieldChange(e) {
+		setLoading(true);
 		setSearch({
 			...search,
 			[e.target.name]: e.target.value,
@@ -93,6 +100,8 @@ const InProgressTask = () => {
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
 			console.log('Something is Wrong -allLeads');
+		} finally{
+			setLoading(false);
 		}
 	}
 
@@ -173,7 +182,22 @@ const InProgressTask = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{astroList && astroList.length > 0 ? (
+										{loading ? (
+											<tr>
+												<td colSpan={10}>
+													<div className='text-center'>
+														<div className='loader'></div>
+													</div>
+												</td>
+											</tr>
+										) : 
+									 astroList.length === 0 ? (
+										<tr>
+											<td colSpan={10} className='text-center'>
+												NOT FOUND
+											</td>
+										</tr>
+									 ) : (
 											astroList.map((item, index) => (
 												<tr key={index + 1}>
 													<td scope='col'>{index + 1 + offset}</td>
@@ -236,14 +260,14 @@ const InProgressTask = () => {
 													</td>
 												</tr>
 											))
-										) : (
-											<tr>
-												<td colSpan={10}>
-													<div className='text-center'>
-														<div className='loader'></div>
-													</div>
-												</td>
-											</tr>
+										// ) : (
+										// 	<tr>
+										// 		<td colSpan={10}>
+										// 			<div className='text-center'>
+										// 				<div className='loader'></div>
+										// 			</div>
+										// 		</td>
+										// 	</tr>
 										)}
 									</tbody>
 								</table>

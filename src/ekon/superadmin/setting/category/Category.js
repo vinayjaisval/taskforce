@@ -25,7 +25,7 @@ const Category = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-
+const [loading, setLoading] = useState(true);
 	const [categoryList, setCategoryList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
@@ -73,7 +73,8 @@ const Category = () => {
 
 	useEffect(() => {
 		async function getCategoryList(page) {
-			page = page;
+			setLoading(true);
+			// page = page;
 			try {
 				const categoryListApi = await axios.get(`${BASE_URL}/admin/category?page=` + page);
 				setCategoryList(categoryListApi.data.data);
@@ -82,6 +83,8 @@ const Category = () => {
 				setOffset(categoryListApi.data.offset);
 			} catch (error) {
 				console.log('Something is Wrong -question');
+			} finally{
+				setLoading(false);
 			}
 		}
 
@@ -89,6 +92,7 @@ const Category = () => {
 	}, [id]);
 
 	async function getPaginatedData(page) {
+		setLoading(true);
 		try {
 			const categoryListApi = await axios.get(`${BASE_URL}/admin/category?page=` + page);
 			setCategoryList(categoryListApi.data.data);
@@ -96,6 +100,8 @@ const Category = () => {
 			setLimit(categoryListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -question Pagination');
+		} finally{
+			setLoading(false);
 		}
 	}
 
@@ -225,7 +231,23 @@ const Category = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{categoryList && categoryList.length > 0 ? (
+										{loading ? (
+											<tr>
+												<td colSpan={5}>
+													<div className='text-center'>
+														<div className='loader'></div>
+													</div>
+												</td>
+											</tr>
+										) :
+										 categoryList.length === 0 ? (
+											<tr>
+												<td colSpan={5} className='text-center'>
+													NOT FOUND
+												</td>
+											</tr>
+										 ) : (
+										//  categoryList.length > 0 ? (
 											categoryList.map((item, index) => (
 												<tr key={index + 1}>
 													<td scope='col'>{index + 1 + offset}</td>
@@ -265,14 +287,14 @@ const Category = () => {
 													</td>
 												</tr>
 											))
-										) : (
-											<tr>
-												<td colSpan={5}>
-													<div className='text-center'>
-														<div className='loader'></div>
-													</div>
-												</td>
-											</tr>
+										// ) : (
+										// 	<tr>
+										// 		<td colSpan={5}>
+										// 			<div className='text-center'>
+										// 				<div className='loader'></div>
+										// 			</div>
+										// 		</td>
+										// 	</tr>
 										)}
 									</tbody>
 								</table>
