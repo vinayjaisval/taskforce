@@ -54,13 +54,18 @@ const LogTask = () => {
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		} else {
 			try {
-				axios
-					.post(`${BASE_URL}/admin/update-lead-followup/${id}/${userIds}`, lead)
-					.then((res) => {
-						document.getElementById('succ_message').style.display = 'block';
-						document.getElementById('alert_message').innerHTML = res.data;
-						window.scrollTo({ top: 0, behavior: 'smooth' });
-					});
+				const res = await axios.post(`${BASE_URL}/admin/update-lead-followup/${id}/${userIds}`
+					, lead);
+
+				document.getElementById('succ_message').style.display = 'block';
+				document.getElementById('alert_message').innerHTML = res.data;
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+				setLead((prev) => ({
+					...prev,
+					newremarks: '',
+				}));
+
+				window.scrollTo({ top: 0, behavior: 'smooth' });
 			} catch (error) {
 				alert('Something is Wrong');
 				window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -170,11 +175,13 @@ const LogTask = () => {
 		try {
 			await axios.get(`${BASE_URL}/admin/timer-calculation/${userIds}/${leadIds}`);
 
-			document.getElementById('succ_message1').style.display = 'block';
-			document.getElementById('alert_message1').innerHTML =
-				'Your Time Updated. Please Refrese Page to see the Changes!!';
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-		} catch (error) {}
+			// document.getElementById('succ_message1').style.display = 'block';
+			// document.getElementById('alert_message1').innerHTML =
+			// 	'Your Time Updated. Please Refrese Page to see the Changes!!';
+			// window.scrollTo({ top: 0, behavior: 'smooth' });
+			const updatedLead = await axios.get(`${BASE_URL}/admin/edit-lead/${id}`);
+			setLead(updatedLead.data);
+		} catch (error) { }
 	}
 
 	return (
@@ -205,7 +212,7 @@ const LogTask = () => {
 								<h4>Start/End Task</h4>
 							</CardHeader>
 							<CardBody className='row g-4'>
-								<div id='succ_message1'>
+								{/* <div id='succ_message1'>
 									<Alert
 										icon='Verified'
 										isLight
@@ -218,7 +225,7 @@ const LogTask = () => {
 										</AlertHeading>
 										<span id='alert_message1'></span>
 									</Alert>
-								</div>
+								</div> */}
 								<br />
 
 								<h6
@@ -279,8 +286,8 @@ const LogTask = () => {
 									<p>
 										{departmentList && departmentList.length > 0
 											? departmentList.map((item) =>
-													lead.project == item.id ? item.name : '',
-											  )
+												lead.project == item.id ? item.name : '',
+											)
 											: ''}
 									</p>
 								</div>
@@ -290,8 +297,8 @@ const LogTask = () => {
 									<p>
 										{sourceList && sourceList.length > 0
 											? sourceList.map((item) =>
-													lead.status == item.id ? item.name : '',
-											  )
+												lead.status == item.id ? item.name : '',
+											)
 											: ''}
 									</p>
 								</div>
@@ -301,8 +308,8 @@ const LogTask = () => {
 									<p>
 										{categoryList && categoryList.length > 0
 											? categoryList.map((item) =>
-													lead.category == item.id ? item.name : '',
-											  )
+												lead.category == item.id ? item.name : '',
+											)
 											: ''}
 									</p>
 								</div>
@@ -342,7 +349,7 @@ const LogTask = () => {
 								<h4>Add Task Log</h4>
 							</CardHeader>
 							<CardBody className=''>
-								<div id='succ_message'>
+								{/* <div id='succ_message'>
 									<Alert
 										icon='Verified'
 										isLight
@@ -355,7 +362,7 @@ const LogTask = () => {
 										</AlertHeading>
 										<span id='alert_message'></span>
 									</Alert>
-								</div>
+								</div> */}
 
 								<form className='row g-4' id='leadForm'>
 									<div className='col-md-6 col-xs-12'>
