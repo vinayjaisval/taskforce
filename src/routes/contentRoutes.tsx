@@ -17,7 +17,7 @@ const LANDING = {
 
 	// Add Task ---
 	add_task: lazy(() => import('../ekon/superadmin/task/AddTask')),
-	
+
 	// Manage Task -- 
 	manage_task: lazy(() => import('../ekon/superadmin/task/ManageTask')),
 	todo_task: lazy(() => import('../ekon/superadmin/task/ToDoTask')),
@@ -33,9 +33,9 @@ const LANDING = {
 	project_task: lazy(() => import('../ekon/superadmin/task/ProjectTask')),
 	status_task: lazy(() => import('../ekon/superadmin/task/StatusTask')),
 	category_task: lazy(() => import('../ekon/superadmin/task/CategoryTask')),
+	project_details: lazy(() => import('../ekon/superadmin/task/ProjectDetails')),
 
 
-	
 	// Master ---
 	Profile: lazy(() => import('../ekon/superadmin/setting/Profile')),
 	Projects: lazy(() => import('../ekon/superadmin/setting/project/Projects')),
@@ -57,7 +57,7 @@ const LANDING = {
 	DelayAWeek: lazy(() => import('../ekon/superadmin/reports/DelayAWeek')),
 	DelayAMonth: lazy(() => import('../ekon/superadmin/reports/DelayAMonth')),
 	TodayUpdatedTask: lazy(() => import('../ekon/superadmin/reports/TodayUpdatedTask')),
-	
+
 };
 
 
@@ -66,7 +66,7 @@ const AdminLead = {
 
 	// Add Task ---
 	add_task: lazy(() => import('../ekon/admin/task/AddTask')),
-	
+
 	// Manage Task -- 
 	manage_task: lazy(() => import('../ekon/admin/task/ManageTask')),
 	todo_task: lazy(() => import('../ekon/admin/task/ToDoTask')),
@@ -84,7 +84,7 @@ const AdminLead = {
 	Agent: lazy(() => import('../ekon/admin/setting/agent/Agent')),
 	Category: lazy(() => import('../ekon/admin/setting/category/Category')),
 	status: lazy(() => import('../ekon/admin/setting/status/Status')),
-	
+
 	// Reports ---
 	TaskStatusSummery: lazy(() => import('../ekon/admin/reports/TaskStatusSummery')),
 	TaskDeadlineSummery: lazy(() => import('../ekon/admin/reports/TaskDeadlineSummery')),
@@ -97,7 +97,7 @@ const AdminLead = {
 	DelayAWeek: lazy(() => import('../ekon/admin/reports/DelayAWeek')),
 	DelayAMonth: lazy(() => import('../ekon/admin/reports/DelayAMonth')),
 	TodayUpdatedTask: lazy(() => import('../ekon/admin/reports/TodayUpdatedTask')),
-	
+
 };
 
 const Department = {
@@ -109,7 +109,7 @@ const Department = {
 	CoachingLead: lazy(() => import('../ekon/department/lead/CoachingLead')),
 
 	Profile: lazy(() => import('../ekon/department/setting/Profile')),
-	
+
 
 }
 
@@ -150,7 +150,7 @@ const AgentLogin = {
 
 	// Chating ---
 	Chat: lazy(() => import('../ekon/agent/chat/Chat')),
-	
+
 }
 
 const ProjectRoute = {
@@ -158,7 +158,7 @@ const ProjectRoute = {
 
 	// Add Task ---
 	add_task: lazy(() => import('../ekon/project/task/AddTask')),
-	
+
 	// Manage Task -- 
 	manage_task: lazy(() => import('../ekon/project/task/ManageTask')),
 	todo_task: lazy(() => import('../ekon/project/task/ToDoTask')),
@@ -173,7 +173,7 @@ const ProjectRoute = {
 
 	// Master ---
 	Profile: lazy(() => import('../ekon/project/setting/Profile')),
-	
+
 	// Reports ---
 	TaskStatusSummery: lazy(() => import('../ekon/project/reports/TaskStatusSummery')),
 	TaskDeadlineSummery: lazy(() => import('../ekon/project/reports/TaskDeadlineSummery')),
@@ -186,7 +186,7 @@ const ProjectRoute = {
 	DelayAWeek: lazy(() => import('../ekon/project/reports/DelayAWeek')),
 	DelayAMonth: lazy(() => import('../ekon/project/reports/DelayAMonth')),
 	TodayUpdatedTask: lazy(() => import('../ekon/project/reports/TodayUpdatedTask')),
-	
+
 };
 
 const AUTH = {
@@ -206,7 +206,7 @@ const presentation = [
 		path: dashboardMenu.manage_project.subMenu.addProjects.path,
 		element: <LANDING.add_projects />,
 		exact: true,
-	}, 
+	},
 
 	{
 		path: dashboardMenu.manage_project.subMenu.manageProjects.path,
@@ -225,8 +225,8 @@ const presentation = [
 		path: dashboardMenu.add_task.subMenu.addTask.path,
 		element: <LANDING.add_task />,
 		exact: true,
-	}, 
-	
+	},
+
 	// manage Lead
 	{
 		path: dashboardMenu.manageAstrologer.subMenu.AddAstro.path,
@@ -247,7 +247,7 @@ const presentation = [
 		path: dashboardMenu.manageAstrologer.subMenu.pendingtask.path,
 		element: <LANDING.pending_task />,
 		exact: true,
-	}, 
+	},
 	{
 		path: dashboardMenu.manageAstrologer.subMenu.inProgresstask.path,
 		element: <LANDING.inprogress_task />,
@@ -300,9 +300,13 @@ const presentation = [
 		element: <LANDING.status_task />,
 		exact: true,
 	},
-	
+	{
+		path: 'superadmin/project/:id',
+		element: <LANDING.project_details />,
+		exact: true,
+	},
 
-	
+
 
 	// Master ===
 
@@ -416,8 +420,8 @@ const presentation = [
 		path: dashboardMenu3.add_task.subMenu.addTask.path,
 		element: <AdminLead.add_task />,
 		exact: true,
-	}, 
-	
+	},
+
 	// manage Lead
 	{
 		path: dashboardMenu3.manageAstrologer.subMenu.AddAstro.path,
@@ -438,7 +442,7 @@ const presentation = [
 		path: dashboardMenu3.manageAstrologer.subMenu.pendingtask.path,
 		element: <AdminLead.pending_task />,
 		exact: true,
-	}, 
+	},
 	{
 		path: dashboardMenu3.manageAstrologer.subMenu.inProgresstask.path,
 		element: <AdminLead.inprogress_task />,
@@ -476,7 +480,7 @@ const presentation = [
 
 	// Master ===
 
-	
+
 	{
 		path: dashboardMenu3.masters.subMenu.status.path,
 		element: <AdminLead.status />,
@@ -568,8 +572,8 @@ const presentation = [
 		path: dashboardMenu4.add_task.subMenu.addTask.path,
 		element: <ProjectRoute.add_task />,
 		exact: true,
-	}, 
-	
+	},
+
 	// manage Lead
 	{
 		path: dashboardMenu4.manageAstrologer.subMenu.AddAstro.path,
@@ -590,7 +594,7 @@ const presentation = [
 		path: dashboardMenu4.manageAstrologer.subMenu.pendingtask.path,
 		element: <ProjectRoute.pending_task />,
 		exact: true,
-	}, 
+	},
 	{
 		path: dashboardMenu4.manageAstrologer.subMenu.inProgresstask.path,
 		element: <ProjectRoute.inprogress_task />,
@@ -628,7 +632,7 @@ const presentation = [
 
 	// Master ===
 
-	
+
 	{
 		path: dashboardMenu4.masters.subMenu.profile.path,
 		element: <ProjectRoute.Profile />,
@@ -691,10 +695,10 @@ const presentation = [
 		element: <ProjectRoute.TodayUpdatedTask />,
 		exact: true,
 	},
-	
+
 
 	/** ************************************************** */
-	
+
 	{
 		path: '/',
 		element: <Login />,
@@ -714,7 +718,7 @@ const presentation = [
 		path: dashboardMenu1.manageAstrologer.subMenu.AddAstro.path,
 		element: <Department.AddLead />,
 		exact: true,
-	}, 
+	},
 	{
 		path: dashboardMenu1.manageAstrologer.subMenu.ManageAstro.path,
 		element: <Department.ManageLead />,
@@ -724,21 +728,21 @@ const presentation = [
 		path: dashboardMenu1.manageAstrologer.subMenu.SchoolLead.path,
 		element: <Department.SchoolLead />,
 		exact: true,
-	}, 
+	},
 
 	{
 		path: dashboardMenu1.manageAstrologer.subMenu.CoachingLead.path,
 		element: <Department.CoachingLead />,
 		exact: true,
-	}, 
+	},
 
 	{
 		path: dashboardMenu1.masters.subMenu.profile.path,
 		element: <Department.Profile />,
 		exact: true,
-	}, 
+	},
 
-	
+
 
 
 	//======== Agent Menu........
@@ -748,7 +752,7 @@ const presentation = [
 		exact: true,
 	},
 
-	
+
 	// manage Lead
 	{
 		path: dashboardMenu2.manageAstrologer.subMenu.AddAstro.path,
@@ -769,7 +773,7 @@ const presentation = [
 		path: dashboardMenu2.manageAstrologer.subMenu.pendingtask.path,
 		element: <AgentLogin.pending_task />,
 		exact: true,
-	}, 
+	},
 	{
 		path: dashboardMenu2.manageAstrologer.subMenu.inProgresstask.path,
 		element: <AgentLogin.inprogress_task />,
@@ -801,7 +805,7 @@ const presentation = [
 
 	// Master ===
 
-	
+
 	{
 		path: dashboardMenu2.masters.subMenu.profile.path,
 		element: <AgentLogin.Profile />,
@@ -871,8 +875,8 @@ const presentation = [
 		element: <AgentLogin.Chat />,
 		exact: true,
 	},
-	
-	
+
+
 
 
 ];

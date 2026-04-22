@@ -25,10 +25,12 @@ import { useParams } from 'react-router-dom';
 import BASE_URL from "../../../config/api";
 
 const UserTask = () => {
+	
 	useMinimizeAside();
 
 	const { id } = useParams();
-const [loading, setLoading] = useState(true);
+	console.log("User ID:", id);
+	const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
@@ -41,13 +43,14 @@ const [loading, setLoading] = useState(true);
 				const astroListApi = await axios.get(
 					`${BASE_URL}/admin/leads_users_list/${id}?page=` + page,
 				);
+				  console.log("API DATA:", astroListApi.data.data);
 				setAstroList(astroListApi.data.data);
 				setTotalRecords(astroListApi.data.total);
 				setLimit(astroListApi.data.limit);
 			} catch (error) {
 				console.log('Something is Wrong -astroList');
 			}
-			finally{
+			finally {
 				setLoading(false);
 			}
 		}
@@ -63,13 +66,14 @@ const [loading, setLoading] = useState(true);
 			const astroListApi = await axios.get(
 				`${BASE_URL}/admin/leads_users_list/${id}?page=` + page + `&keywords=` + keywordVal,
 			);
+			
 			setAstroList(astroListApi.data.data);
 			setTotalRecords(astroListApi.data.total);
 			setLimit(astroListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -astroList Pagination');
 		}
-		finally{
+		finally {
 			setLoading(false);
 		}
 	}
@@ -97,15 +101,16 @@ const [loading, setLoading] = useState(true);
 			const astroListApi = await axios.get(
 				`${BASE_URL}/admin/leads_users_list/${id}?page=1&keywords=` + e.target.value,
 			);
+			console.log("Clicked ID:", item.assignee);
 			setAstroList(astroListApi.data.data);
 			setTotalRecords(astroListApi.data.total);
 			setLimit(astroListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -allLeads');
-		} finally{
+		} finally {
 			setLoading(false);
 		}
-		
+
 	}
 
 	return (
@@ -200,79 +205,83 @@ const [loading, setLoading] = useState(true);
 													</td>
 												</tr>
 											) : (
-										// {astroList && astroList.length > 0 ? (
-											astroList.map((item, index) => (
-												<tr key={index + 1}>
-													<td scope='col'>#{item.id}</td>
-													<td scope='col'>{item.name}</td>
-													<td scope='col'>{item.source_name}</td>
-													<td scope='col'>{item.category_id_name}</td>
-													<td scope='col'>{item.dedline}</td>
-													<td scope='col'>
-														<Assignee id={item.project} />
-													</td>
-													<td>
-														<Link
-															to={'/superadmin/task-log/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='FollowTheSigns'>
-																Follow
-															</Button>
-														</Link>
-													</td>
-													<td>
-														<Link
-															to={'/superadmin/edit-task/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='Send'>
-																Edit
-															</Button>
-														</Link>
-													</td>
-													<td>
-														<Dropdown>
-															<DropdownToggle hasIcon={false}>
+												// {astroList && astroList.length > 0 ? (
+												astroList.map((item, index) => (
+													
+													<tr key={index + 1}>
+														<td scope='col'>#{item.id}</td>
+														<td scope='col'>{item.name}</td>
+														<td scope='col'>{item.source_name}</td>
+														<td scope='col'>{item.category_id_name}</td>
+														<td scope='col'>{item.dedline}</td>
+														<td scope='col'>
+															<Link to={`/superadmin/project/${item.assignee}`}>
+																<Assignee id={item.project} />
+															</Link>
+														</td>
+														<td>
+															<Link
+																to={'/superadmin/task-log/' + item.id}>
 																<Button
-																	icon='MoreHoriz'
-																	color='dark'
+																	color='primary'
 																	isLight
-																	shadow='sm'
-																/>
-															</DropdownToggle>
-															<DropdownMenu isAlignmentEnd>
-																<DropdownItem>
-																	<Button icon='Visibility'>
-																		<span
-																			onClick={(e) =>
-																				handleClick(
-																					e,
-																					item.id,
-																				)
-																			}>
-																			{' '}
-																			<i className='fa fa-trash'></i>{' '}
-																			Delete Task
-																		</span>
-																	</Button>
-																</DropdownItem>
-															</DropdownMenu>
-														</Dropdown>
-													</td>
-												</tr>
-											))
-										// ) : (
-										// 	<tr>
-										// 		<td colSpan={9}>
-										// 			<div className='text-center'>
-										// 				<div className='loader'></div>
-										// 			</div>
-										// 		</td>
-										// 	</tr>
-										)}
+																	icon='FollowTheSigns'>
+																	Follow
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Link
+																to={'/superadmin/edit-task/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='Send'>
+																	Edit
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Dropdown>
+																<DropdownToggle hasIcon={false}>
+																	<Button
+																		icon='MoreHoriz'
+																		color='dark'
+																		isLight
+																		shadow='sm'
+																	/>
+																</DropdownToggle>
+																<DropdownMenu isAlignmentEnd>
+																	<DropdownItem>
+																		<Button icon='Visibility'>
+																			<span
+																				onClick={(e) =>
+																					handleClick(
+																						e,
+																						item.id,
+																					)
+																				}>
+																				{' '}
+																				<i className='fa fa-trash'></i>{' '}
+																				Delete Task
+																			</span>
+																		</Button>
+																	</DropdownItem>
+																</DropdownMenu>
+															</Dropdown>
+														</td>
+													</tr>
+												))
+												
+												// ) : (
+												// 	<tr>
+												// 		<td colSpan={9}>
+												// 			<div className='text-center'>
+												// 				<div className='loader'></div>
+												// 			</div>
+												// 		</td>
+												// 	</tr>
+											)}
 									</tbody>
 								</table>
 							</CardBody>
