@@ -302,7 +302,7 @@ const presentation = [
 		exact: true,
 	},
 	{
-		path: 'superadmin/project/:id',
+		 path: 'superadmin/project/:projectId/:taskId',
 		element: <LANDING.project_details />,
 		exact: true,
 	},

@@ -18,14 +18,14 @@ import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link } from 'react-router-dom';
-
+import { useLocation } from 'react-router-dom';
 import Assignee from '../user_status/Assignee';
 import { useParams } from 'react-router-dom';
 import BASE_URL from "../../../config/api";
 
 const UserTask = () => {
 	useMinimizeAside();
-
+	const location = useLocation();
 	const { id } = useParams();
 	const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
@@ -51,7 +51,7 @@ const UserTask = () => {
 		}
 
 		getAstroList(1);
-	}, [id]);
+	}, [id, location]);
 
 	async function getPaginatedData(page) {
 		setLoading(true);
@@ -196,78 +196,78 @@ const UserTask = () => {
 													</td>
 												</tr>
 											) : (
-											astroList.map((item, index) => (
-										<tr key={index + 1}>
-											<td scope='col'>#{item.id}</td>
-											<td scope='col'>{item.name}</td>
-											<td scope='col'>{item.source_name}</td>
-											<td scope='col'>{item.category_id_name}</td>
-											<td scope='col'>{item.dedline}</td>
-											<td scope='col'>
-												<Link to={`/admin/project/${item.project}`}>
-													<Assignee id={item.project} />
-												</Link>
-											</td>
-											<td>
-												<Link to={'/admin/task-log/' + item.id}>
-													<Button
-														color='primary'
-														isLight
-														icon='FollowTheSigns'>
-														Follow
-													</Button>
-												</Link>
-											</td>
-											<td>
-												<Link to={'/admin/edit-task/' + item.id}>
-													<Button
-														color='primary'
-														isLight
-														icon='Send'>
-														Edit
-													</Button>
-												</Link>
-											</td>
-											<td>
-												<Dropdown>
-													<DropdownToggle hasIcon={false}>
-														<Button
-															icon='MoreHoriz'
-															color='dark'
-															isLight
-															shadow='sm'
-														/>
-													</DropdownToggle>
-													<DropdownMenu isAlignmentEnd>
-														<DropdownItem>
-															<Button icon='Visibility'>
-																<span
-																	onClick={(e) =>
-																		handleClick(
-																			e,
-																			item.id,
-																		)
-																	}>
-																	{' '}
-																	<i className='fa fa-trash'></i>{' '}
-																	Delete Task
-																</span>
-															</Button>
-														</DropdownItem>
-													</DropdownMenu>
-												</Dropdown>
-											</td>
-										</tr>
-										))
-										// ) : (
-										// <tr>
-										// 	<td colSpan={9}>
-										// 		<div className='text-center'>
-										// 			<div className='loader'></div>
-										// 		</div>
-										// 	</td>
-										// </tr>
-										)}
+												astroList.map((item, index) => (
+													<tr key={index + 1}>
+														<td scope='col'>#{item.id}</td>
+														<td scope='col'>{item.name}</td>
+														<td scope='col'>{item.source_name}</td>
+														<td scope='col'>{item.category_id_name}</td>
+														<td scope='col'>{item.dedline}</td>
+														<td scope='col'>
+															<Link to={`/admin/project/${item.project}`}>
+																<Assignee id={item.project} />
+															</Link>
+														</td>
+														<td>
+															<Link to={'/admin/task-log/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='FollowTheSigns'>
+																	Follow
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Link to={'/admin/edit-task/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='Send'>
+																	Edit
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Dropdown>
+																<DropdownToggle hasIcon={false}>
+																	<Button
+																		icon='MoreHoriz'
+																		color='dark'
+																		isLight
+																		shadow='sm'
+																	/>
+																</DropdownToggle>
+																<DropdownMenu isAlignmentEnd>
+																	<DropdownItem>
+																		<Button icon='Visibility'>
+																			<span
+																				onClick={(e) =>
+																					handleClick(
+																						e,
+																						item.id,
+																					)
+																				}>
+																				{' '}
+																				<i className='fa fa-trash'></i>{' '}
+																				Delete Task
+																			</span>
+																		</Button>
+																	</DropdownItem>
+																</DropdownMenu>
+															</Dropdown>
+														</td>
+													</tr>
+												))
+												// ) : (
+												// <tr>
+												// 	<td colSpan={9}>
+												// 		<div className='text-center'>
+												// 			<div className='loader'></div>
+												// 		</div>
+												// 	</td>
+												// </tr>
+											)}
 									</tbody>
 								</table>
 							</CardBody>

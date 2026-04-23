@@ -18,14 +18,14 @@ import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link } from 'react-router-dom';
-
+import { useLocation } from 'react-router-dom';
 import Assignee from '../user_status/Assignee';
 import { useParams } from 'react-router-dom';
 import BASE_URL from "../../../config/api";
 
 const ProjectDetails = () => {
     useMinimizeAside();
-
+    const location = useLocation();
     const { id } = useParams();
     console.log("Project ID:", id);
     const [loading, setLoading] = useState(true);
@@ -53,7 +53,7 @@ const ProjectDetails = () => {
         }
 
         getAstroList(1);
-    }, [id]);
+    }, [id, location]);
 
     async function getPaginatedData(page) {
         setLoading(true);

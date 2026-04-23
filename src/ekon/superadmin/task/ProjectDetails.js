@@ -25,11 +25,12 @@ import { useParams } from 'react-router-dom';
 import BASE_URL from "../../../config/api";
 
 const ProjectDetails = () => {
-  
+
     useMinimizeAside();
 
-    const { id } = useParams();
-      console.log("Project ID:", id);
+    const { projectId, taskId } = useParams();
+    console.log(projectId); // 209
+    console.log(taskId);    // 207
     const [loading, setLoading] = useState(true);
     const [astroList, setAstroList] = useState([]);
     const [totalRecords, setTotalRecords] = useState([]);
@@ -41,7 +42,7 @@ const ProjectDetails = () => {
             // page = page;
             try {
                 const astroListApi = await axios.get(
-                    `${BASE_URL}/admin/project_tasks/${id}?page=` + page,
+                    `${BASE_URL}/admin/project_tasks/${projectId}?page=` + page,
                 );
                 console.log("API DATA:", astroListApi.data.data);
                 setAstroList(astroListApi.data.data);
@@ -56,7 +57,7 @@ const ProjectDetails = () => {
         }
 
         getAstroList(1);
-    }, [id]);
+    }, [projectId]);
 
     async function getPaginatedData(page) {
         setLoading(true);
@@ -64,7 +65,7 @@ const ProjectDetails = () => {
 
         try {
             const astroListApi = await axios.get(
-                `${BASE_URL}/admin/leads_users_list/${id}?page=` + page + `&keywords=` + keywordVal,
+                `${BASE_URL}/admin/leads_users_list/${projectId}?page=` + page + `&keywords=` + keywordVal,
             );
             setAstroList(astroListApi.data.data);
             setTotalRecords(astroListApi.data.total);
@@ -98,7 +99,7 @@ const ProjectDetails = () => {
         });
         try {
             const astroListApi = await axios.get(
-                `${BASE_URL}/admin/leads_users_list/${id}?page=1&keywords=` + e.target.value,
+                `${BASE_URL}/admin/leads_users_list/${projectId}?page=1&keywords=` + e.target.value,
             );
             setAstroList(astroListApi.data.data);
             setTotalRecords(astroListApi.data.total);
@@ -213,7 +214,7 @@ const ProjectDetails = () => {
                                                         <td scope='col'>{item.dedline}</td>
                                                         <td scope='col'>
                                                             {/* <Link to={`/superadmin/project/${item.project}`}> */}
-                                                                <Assignee id={item.project} />
+                                                            <Assignee id={item.project} />
                                                             {/* </Link> */}
                                                         </td>
                                                         <td>

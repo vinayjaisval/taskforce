@@ -18,16 +18,16 @@ import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link } from 'react-router-dom';
-
+import { useLocation } from 'react-router-dom';
 import Assignee from '../user_status/Assignee';
 import { useParams } from 'react-router-dom';
 
 import BASE_URL from "../../../config/api";
 
 const UserTask = () => {
-	
-	useMinimizeAside();
 
+	useMinimizeAside();
+	const location = useLocation();
 	const { id } = useParams();
 	console.log("User ID:", id);
 	const [loading, setLoading] = useState(true);
@@ -43,7 +43,7 @@ const UserTask = () => {
 				const astroListApi = await axios.get(
 					`${BASE_URL}/admin/leads_users_list/${id}?page=` + page,
 				);
-				  console.log("API DATA:", astroListApi.data.data);
+				console.log("API DATA:", astroListApi.data.data);
 				setAstroList(astroListApi.data.data);
 				setTotalRecords(astroListApi.data.total);
 				setLimit(astroListApi.data.limit);
@@ -56,7 +56,7 @@ const UserTask = () => {
 		}
 
 		getAstroList(1);
-	}, [id]);
+	}, [id, location]);
 
 	async function getPaginatedData(page) {
 		setLoading(true);
@@ -66,7 +66,7 @@ const UserTask = () => {
 			const astroListApi = await axios.get(
 				`${BASE_URL}/admin/leads_users_list/${id}?page=` + page + `&keywords=` + keywordVal,
 			);
-			
+
 			setAstroList(astroListApi.data.data);
 			setTotalRecords(astroListApi.data.total);
 			setLimit(astroListApi.data.limit);
@@ -207,18 +207,18 @@ const UserTask = () => {
 											) : (
 												// {astroList && astroList.length > 0 ? (
 												astroList.map((item, index) => (
-													
+
 													<tr key={index + 1}>
 														<td scope='col'>#{item.id}</td>
 														<td scope='col'>
-															<Link to={`/superadmin/project/${item.project}`}>
+															<Link to={`/superadmin/project/${item.project}/${id}`}>
 																<Assignee id={item.project} />
 															</Link>
 														</td>
-														
+
 														<td scope='col'>{item.name}</td>
 														<td scope='col'>{item.source_name}</td>
-														
+
 														<td scope='col'>{item.dedline}</td>
 														<td scope='col'>{item.total_tasks}</td>
 														{/* <td>
@@ -274,7 +274,7 @@ const UserTask = () => {
 														</td> */}
 													</tr>
 												))
-												
+
 												// ) : (
 												// 	<tr>
 												// 		<td colSpan={9}>
