@@ -25,7 +25,7 @@ const Agent = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-
+	const [loading, setLoading] = useState(true);
 	const [agentList, setAgentList] = useState([]);
 	const [teamLeadList, setTeamLeadList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
@@ -95,7 +95,8 @@ const Agent = () => {
 
 	useEffect(() => {
 		async function getAgentList(page) {
-			page = page;
+			setLoading(true);
+			// page = page;
 			try {
 				const agentListApi = await axios.get(`${BASE_URL}/admin/agents?page=` + page);
 				setAgentList(agentListApi.data.data);
@@ -104,24 +105,32 @@ const Agent = () => {
 				setOffset(agentListApi.data.offset);
 			} catch (error) {
 				console.log('Something is Wrong -question');
+			} finally{
+				setLoading(false);
 			}
 		}
 
 		async function getTeamLeadList() {
+			setLoading(true);
 			try {
 				const teamLeadApi = await axios.get(`${BASE_URL}/admin/all-teamlead-list`);
 				setTeamLeadList(teamLeadApi.data);
 			} catch (error) {
 				console.log('Something is Wrong -Team');
+			} finally{
+				setLoading(false);
 			}
 		}
 
 		async function getSkillsList() {
+			setLoading(true);
 			try {
 				const skillsListApi = await axios.get(`${BASE_URL}/admin/all-skills-list`);
 				setSkillsList(skillsListApi.data);
 			} catch (error) {
 				console.log('Something is Wrong -skills');
+			} finally{
+				setLoading(false);
 			}
 		}
 
@@ -131,6 +140,7 @@ const Agent = () => {
 	}, [id]);
 
 	async function getPaginatedData(page) {
+		setLoading(true);
 		try {
 			const agentListApi = await axios.get(`${BASE_URL}/admin/agents?page=` + page);
 			setAgentList(agentListApi.data.data);
@@ -138,6 +148,8 @@ const Agent = () => {
 			setLimit(agentListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -question Pagination');
+		} finally{
+			setLoading(false);
 		}
 	}
 
@@ -390,7 +402,22 @@ const Agent = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{agentList && agentList.length > 0 ? (
+										{loading ? (
+											<tr>
+												<td colSpan={8}>
+													<div className='text-center'>
+														<div className='loader'></div>
+													</div>
+												</td>
+											</tr>
+										) :
+										 agentList.length === 0 ? (
+											<tr>
+												<td colSpan={8} className='text-center'>
+													NOT FOUND
+												</td>
+											</tr>
+										 ) : (
 											agentList.map((item, index) => (
 												<tr key={index + 1}>
 													<td scope='col'>{index + 1 + offset}</td>
@@ -433,14 +460,14 @@ const Agent = () => {
 													</td>
 												</tr>
 											))
-										) : (
-											<tr>
-												<td colSpan={8}>
-													<div className='text-center'>
-														<div className='loader'></div>
-													</div>
-												</td>
-											</tr>
+										// ) : (
+										// 	<tr>
+										// 		<td colSpan={8}>
+										// 			<div className='text-center'>
+										// 				<div className='loader'></div>
+										// 			</div>
+										// 		</td>
+										// 	</tr>
 										)}
 									</tbody>
 								</table>

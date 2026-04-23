@@ -25,7 +25,7 @@ const Projects = () => {
 	useMinimizeAside();
 
 	const id = localStorage.getItem('sess_id');
-
+	const [loading, setLoading] = useState(true);
 	const [departmentList, setDepartmentList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [teamLeadList, setTeamLeadList] = useState([]);
@@ -93,7 +93,8 @@ const Projects = () => {
 
 	useEffect(() => {
 		async function getDepartmentList(page) {
-			page = page;
+			setLoading(true);
+			// page = page;
 			try {
 				const departmentListApi = await axios.get(
 					`${BASE_URL}/admin/projects?page=` + page,
@@ -104,15 +105,20 @@ const Projects = () => {
 				setOffset(departmentListApi.data.offset);
 			} catch (error) {
 				console.log('Something is Wrong -question');
+			} finally {
+				setLoading(false);
 			}
 		}
 
 		async function getTeamLeadList() {
+			setLoading(true);
 			try {
 				const teamLeadApi = await axios.get(`${BASE_URL}/admin/all-teamlead-list`);
 				setTeamLeadList(teamLeadApi.data);
 			} catch (error) {
 				console.log('Something is Wrong -Team');
+			} finally {
+				setLoading(false);
 			}
 		}
 
@@ -121,6 +127,7 @@ const Projects = () => {
 	}, [id]);
 
 	async function getPaginatedData(page) {
+		setLoading(true);
 		try {
 			const departmentListApi = await axios.get(`${BASE_URL}/admin/projects?page=` + page);
 			setDepartmentList(departmentListApi.data.data);
@@ -128,6 +135,8 @@ const Projects = () => {
 			setLimit(departmentListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -question Pagination');
+		} finally {
+			setLoading(false);
 		}
 	}
 
@@ -380,50 +389,7 @@ const Projects = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{departmentList && departmentList.length > 0 ? (
-											departmentList.map((item, index) => (
-												<tr key={index + 1}>
-													<td scope='col'>{index + 1 + offset}</td>
-													<td scope='col'>{item.name}</td>
-													<td scope='col'>{item.userid}</td>
-													<td scope='col'>{item.email}</td>
-													<td scope='col'>{item.phone}</td>
-													<td scope='col'>{item.total_task}</td>
-													<td>
-														<EditCanva id={item.id} />
-													</td>
-													<td>
-														<Dropdown>
-															<DropdownToggle hasIcon={false}>
-																<Button
-																	icon='MoreHoriz'
-																	color='dark'
-																	isLight
-																	shadow='sm'
-																/>
-															</DropdownToggle>
-															<DropdownMenu isAlignmentEnd>
-																<DropdownItem>
-																	<Button icon='Visibility'>
-																		<span
-																			onClick={(e) =>
-																				handleClick(
-																					e,
-																					item.id,
-																				)
-																			}>
-																			{' '}
-																			<i className='fa fa-trash'></i>{' '}
-																			Delete Project
-																		</span>
-																	</Button>
-																</DropdownItem>
-															</DropdownMenu>
-														</Dropdown>
-													</td>
-												</tr>
-											))
-										) : (
+										{loading ? (
 											<tr>
 												<td colSpan={8}>
 													<div className='text-center'>
@@ -431,7 +397,65 @@ const Projects = () => {
 													</div>
 												</td>
 											</tr>
-										)}
+										) :
+											departmentList.length === 0 ? (
+												<tr>
+													<td colsSpan={8} className='text-center'>
+														NOT FOUND
+													</td>
+												</tr>
+											) : (
+												departmentList.map((item, index) => (
+													<tr key={index + 1}>
+														<td scope='col'>{index + 1 + offset}</td>
+														<td scope='col'>{item.name}</td>
+														<td scope='col'>{item.userid}</td>
+														<td scope='col'>{item.email}</td>
+														<td scope='col'>{item.phone}</td>
+														<td scope='col'>{item.total_task}</td>
+														<td>
+															<EditCanva id={item.id} />
+														</td>
+														<td>
+															<Dropdown>
+																<DropdownToggle hasIcon={false}>
+																	<Button
+																		icon='MoreHoriz'
+																		color='dark'
+																		isLight
+																		shadow='sm'
+																	/>
+																</DropdownToggle>
+																<DropdownMenu isAlignmentEnd>
+																	<DropdownItem>
+																		<Button icon='Visibility'>
+																			<span
+																				onClick={(e) =>
+																					handleClick(
+																						e,
+																						item.id,
+																					)
+																				}>
+																				{' '}
+																				<i className='fa fa-trash'></i>{' '}
+																				Delete Project
+																			</span>
+																		</Button>
+																	</DropdownItem>
+																</DropdownMenu>
+															</Dropdown>
+														</td>
+													</tr>
+												))
+												// ) : (
+												// 	<tr>
+												// 		<td colSpan={8}>
+												// 			<div className='text-center'>
+												// 				<div className='loader'></div>
+												// 			</div>
+												// 		</td>
+												// 	</tr>
+											)}
 									</tbody>
 								</table>
 							</CardBody>
