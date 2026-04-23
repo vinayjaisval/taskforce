@@ -41,7 +41,7 @@ const ProjectDetails = () => {
             // page = page;
             try {
                 const astroListApi = await axios.get(
-                    `${BASE_URL}/admin/leads_users_list/${id}?page=` + page,
+                    `${BASE_URL}/admin/project_tasks/${id}?page=` + page,
                 );
                 console.log("API DATA:", astroListApi.data.data);
                 setAstroList(astroListApi.data.data);
