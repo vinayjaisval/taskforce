@@ -178,14 +178,14 @@ const UserTask = () => {
 									<thead>
 										<tr>
 											<th width='1'>TaskID </th>
-											<th>Heading</th>
-											<th>Status</th>
-											<th>Category</th>
-											<th>Deadline</th>
 											<th>Project</th>
+											<th>Team Leader</th>
+											<th>Assignee</th>
+											<th>Deadline</th>
+											<th>Total Task</th>
+											{/* <th width='120'></th>
 											<th width='120'></th>
-											<th width='120'></th>
-											<th width='1'></th>
+											<th width='1'></th> */}
 										</tr>
 									</thead>
 									<tbody>
@@ -210,16 +210,17 @@ const UserTask = () => {
 													
 													<tr key={index + 1}>
 														<td scope='col'>#{item.id}</td>
-														<td scope='col'>{item.name}</td>
-														<td scope='col'>{item.source_name}</td>
-														<td scope='col'>{item.category_id_name}</td>
-														<td scope='col'>{item.dedline}</td>
 														<td scope='col'>
-															<Link to={`/superadmin/project/${item.assignee}`}>
+															<Link to={`/superadmin/project/${item.project}`}>
 																<Assignee id={item.project} />
 															</Link>
 														</td>
-														<td>
+														<td scope='col'>{item.name}</td>
+														<td scope='col'>{item.source_name}</td>
+														
+														<td scope='col'>{item.dedline}</td>
+														<td scope='col'>{item.total_tasks}</td>
+														{/* <td>
 															<Link
 																to={'/superadmin/task-log/' + item.id}>
 																<Button
@@ -269,7 +270,7 @@ const UserTask = () => {
 																	</DropdownItem>
 																</DropdownMenu>
 															</Dropdown>
-														</td>
+														</td> */}
 													</tr>
 												))
 												
