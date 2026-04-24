@@ -206,21 +206,22 @@ const UserTask = () => {
 												</tr>
 											) : (
 												// {astroList && astroList.length > 0 ? (
-												astroList.map((item, index) => (
-													
-													<tr key={index + 1}>
-														<td scope='col'>#{item.id}</td>
-														<td scope='col'>
-															<Link to={`/superadmin/project/${item.project}/${id}`}>
-																<Assignee id={item.project} />
-															</Link>
-														</td>
-														<td scope='col'>{item.team_lead}</td>
-														{/* <td scope='col'>{item.source_name}</td> */}
-														
-														{/* <td scope='col'>{item.dedline}</td> */}
-														<td scope='col'>{item.total_tasks}</td>
-														{/* <td>
+												astroList.map((item, index) => {
+													console.log("items:", item);
+													return (
+														<tr key={index + 1}>
+															<td scope='col'>#{item.id}</td>
+															<td scope='col'>
+																<Link to={`/superadmin/project/${item.project}/${id}`}>
+																	<Assignee id={item.project} />
+																</Link>
+															</td>
+															<td scope='col'>{item.team_lead}</td>
+															{/* <td scope='col'>{item.source_name}</td> */}
+
+															{/* <td scope='col'>{item.dedline}</td> */}
+															<td scope='col'>{item.total_tasks}</td>
+															{/* <td>
 															<Link
 																to={'/superadmin/task-log/' + item.id}>
 																<Button
@@ -271,9 +272,10 @@ const UserTask = () => {
 																</DropdownMenu>
 															</Dropdown>
 														</td> */}
-													</tr>
-												))
-												
+														</tr>
+													);
+												})
+
 												// ) : (
 												// 	<tr>
 												// 		<td colSpan={9}>

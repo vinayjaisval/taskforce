@@ -169,14 +169,15 @@ const UserTask = () => {
 									<thead>
 										<tr>
 											<th width='1'>TaskID </th>
-											<th>Heading</th>
-											<th>Status</th>
-											<th>Category</th>
-											<th>Deadline</th>
+											<th>Project</th>
+											<th>Team Leader</th>
+											<th>Team Member</th>
+											<th>Total Task</th>
+											{/* <th>Deadline</th>
 											<th>Project</th>
 											<th width='120'></th>
 											<th width='120'></th>
-											<th width='1'></th>
+											<th width='1'></th> */}
 										</tr>
 									</thead>
 									<tbody>
@@ -196,18 +197,22 @@ const UserTask = () => {
 													</td>
 												</tr>
 											) : (
-												astroList.map((item, index) => (
+												astroList.map((item, index) => {
+													console.log("items:", item);
+													return(
 													<tr key={index + 1}>
 														<td scope='col'>#{item.id}</td>
-														<td scope='col'>{item.name}</td>
-														<td scope='col'>{item.source_name}</td>
-														<td scope='col'>{item.category_id_name}</td>
-														<td scope='col'>{item.dedline}</td>
 														<td scope='col'>
-															<Link to={`/admin/project/${item.project}`}>
+															<Link to={`/admin/project/${item.project}/${id}`}>
 																<Assignee id={item.project} />
 															</Link>
 														</td>
+														<td scope='col'>{item.team_lead}</td>
+														<td scope='col'>{item.team_members}</td>
+														<td scope='col'>{item.total_tasks}</td>
+														{/* <td scope='col'>{item.category_id_name}</td>
+														<td scope='col'>{item.dedline}</td> */}
+														{/* 														
 														<td>
 															<Link to={'/admin/task-log/' + item.id}>
 																<Button
@@ -256,9 +261,10 @@ const UserTask = () => {
 																	</DropdownItem>
 																</DropdownMenu>
 															</Dropdown>
-														</td>
+														</td> */}
 													</tr>
-												))
+													);
+												})
 												// ) : (
 												// <tr>
 												// 	<td colSpan={9}>

@@ -26,7 +26,7 @@ import BASE_URL from "../../../config/api";
 const ProjectDetails = () => {
     useMinimizeAside();
     const location = useLocation();
-    const { id } = useParams();
+    const { pId, id } = useParams();
     console.log("Project ID:", id);
     const [loading, setLoading] = useState(true);
     const [astroList, setAstroList] = useState([]);
@@ -39,7 +39,7 @@ const ProjectDetails = () => {
             // page = page;
             try {
                 const astroListApi = await axios.get(
-                    `${BASE_URL}/admin/leads_users_list/${id}?page=` + page,
+                    `${BASE_URL}/admin/project_tasks/${pId}/${id}?page=` + page,
                 );
                 console.log("API DATA:", astroListApi.data.data);
                 setAstroList(astroListApi.data.data);
@@ -53,7 +53,7 @@ const ProjectDetails = () => {
         }
 
         getAstroList(1);
-    }, [id, location]);
+    }, [pId, location]);
 
     async function getPaginatedData(page) {
         setLoading(true);
@@ -94,7 +94,7 @@ const ProjectDetails = () => {
         });
         try {
             const astroListApi = await axios.get(
-                `${BASE_URL}/admin/leads_users_list/${id}?page=1&keywords=` + e.target.value,
+                `${BASE_URL}/admin/leads_users_list/${pId}?page=1&keywords=` + e.target.value,
             );
             setAstroList(astroListApi.data.data);
             setTotalRecords(astroListApi.data.total);

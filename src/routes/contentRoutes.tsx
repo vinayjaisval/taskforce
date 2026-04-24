@@ -479,7 +479,7 @@ const presentation = [
 		exact: true,
 	},
 	{
-		path: 'admin/project/:id',
+		path: 'admin/project/:pId/:id',
 		element: <AdminLead.project_details />,
 		exact:true,
 	},

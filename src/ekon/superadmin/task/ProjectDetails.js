@@ -58,7 +58,7 @@ const ProjectDetails = () => {
         }
 
         getAstroList(1);
-    }, [projectId]);
+    }, [pId]);
 
     async function getPaginatedData(page) {
         setLoading(true);
@@ -66,7 +66,7 @@ const ProjectDetails = () => {
 
         try {
             const astroListApi = await axios.get(
-                `${BASE_URL}/admin/leads_users_list/${projectId}?page=` + page + `&keywords=` + keywordVal,
+                `${BASE_URL}/admin/leads_users_list/${pId}?page=` + page + `&keywords=` + keywordVal,
             );
             setAstroList(astroListApi.data.data);
             setTotalRecords(astroListApi.data.total);
@@ -100,7 +100,7 @@ const ProjectDetails = () => {
         });
         try {
             const astroListApi = await axios.get(
-                `${BASE_URL}/admin/leads_users_list/${projectId}?page=1&keywords=` + e.target.value,
+                `${BASE_URL}/admin/leads_users_list/${pId}?page=1&keywords=` + e.target.value,
             );
             setAstroList(astroListApi.data.data);
             setTotalRecords(astroListApi.data.total);
