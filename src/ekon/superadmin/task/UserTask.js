@@ -180,8 +180,8 @@ const UserTask = () => {
 											<th width='1'>TaskID </th>
 											<th>Project</th>
 											<th>Team Leader</th>
-											<th>Assignee</th>
-											<th>Deadline</th>
+											{/* <th>Assignee</th> */}
+											{/* <th>Deadline</th> */}
 											<th>Total Task</th>
 											{/* <th width='120'></th>
 											<th width='120'></th>
@@ -206,28 +206,74 @@ const UserTask = () => {
 												</tr>
 											) : (
 												// {astroList && astroList.length > 0 ? (
-												astroList.map((item, index) => {
-													console.log("list:", item);   // ✅ now allowed
-
-													return (
-														<tr key={index + 1}>
-															<td>#{item.id}</td>
-
-															<td>
-																<Link to={`/superadmin/project/${item.project}/${id}`}>
-																	<Assignee id={item.project} />
-																</Link>
-															</td>
-
-															<td>{item.team_lead}</td>
-															<td>{item.team_members}</td>
-
-															<td>{item.deadline || '--'}</td>   {/* spelling fixed */}
-															<td>{item.total_tasks}</td>
-														</tr>
-													);
-												})
-
+												astroList.map((item, index) => (
+													
+													<tr key={index + 1}>
+														<td scope='col'>#{item.id}</td>
+														<td scope='col'>
+															<Link to={`/superadmin/project/${item.project}/${id}`}>
+																<Assignee id={item.project} />
+															</Link>
+														</td>
+														<td scope='col'>{item.team_lead}</td>
+														{/* <td scope='col'>{item.source_name}</td> */}
+														
+														{/* <td scope='col'>{item.dedline}</td> */}
+														<td scope='col'>{item.total_tasks}</td>
+														{/* <td>
+															<Link
+																to={'/superadmin/task-log/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='FollowTheSigns'>
+																	Follow
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Link
+																to={'/superadmin/edit-task/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='Send'>
+																	Edit
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Dropdown>
+																<DropdownToggle hasIcon={false}>
+																	<Button
+																		icon='MoreHoriz'
+																		color='dark'
+																		isLight
+																		shadow='sm'
+																	/>
+																</DropdownToggle>
+																<DropdownMenu isAlignmentEnd>
+																	<DropdownItem>
+																		<Button icon='Visibility'>
+																			<span
+																				onClick={(e) =>
+																					handleClick(
+																						e,
+																						item.id,
+																					)
+																				}>
+																				{' '}
+																				<i className='fa fa-trash'></i>{' '}
+																				Delete Task
+																			</span>
+																		</Button>
+																	</DropdownItem>
+																</DropdownMenu>
+															</Dropdown>
+														</td> */}
+													</tr>
+												))
+												
 												// ) : (
 												// 	<tr>
 												// 		<td colSpan={9}>

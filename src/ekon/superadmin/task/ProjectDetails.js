@@ -28,9 +28,10 @@ const ProjectDetails = () => {
 
     useMinimizeAside();
 
-    const { projectId, taskId } = useParams();
-    console.log(projectId); // 209
-    console.log(taskId);    // 207
+    const { pId,id } = useParams();
+      console.log("Project ID:", id);
+      console.log("Project pId:", pId);
+
     const [loading, setLoading] = useState(true);
     const [astroList, setAstroList] = useState([]);
     const [totalRecords, setTotalRecords] = useState([]);
@@ -42,7 +43,7 @@ const ProjectDetails = () => {
             // page = page;
             try {
                 const astroListApi = await axios.get(
-                    `${BASE_URL}/admin/project_tasks/${projectId}?page=` + page,
+                    `${BASE_URL}/admin/project_tasks/${pId}/${id}?page=` + page,
                 );
                 console.log("API DATA:", astroListApi.data.data);
                 setAstroList(astroListApi.data.data);
@@ -210,7 +211,7 @@ const ProjectDetails = () => {
                                                         <td scope='col'>#{item.id}</td>
                                                         <td scope='col'>{item.name}</td>
                                                         <td scope='col'>{item.source_name}</td>
-                                                        <td scope='col'>{item.category_id_name}</td>
+                                                        <td scope='col'>{item.category_name}</td>
                                                         <td scope='col'>{item.dedline}</td>
                                                         <td scope='col'>
                                                             {/* <Link to={`/superadmin/project/${item.project}`}> */}
