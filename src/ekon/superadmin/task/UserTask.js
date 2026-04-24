@@ -180,8 +180,8 @@ const UserTask = () => {
 											<th width='1'>TaskID </th>
 											<th>Project</th>
 											<th>Team Leader</th>
-											<th>Assignee</th>
-											<th>Deadline</th>
+											{/* <th>Assignee</th> */}
+											{/* <th>Deadline</th> */}
 											<th>Total Task</th>
 											{/* <th width='120'></th>
 											<th width='120'></th>
@@ -211,14 +211,14 @@ const UserTask = () => {
 													<tr key={index + 1}>
 														<td scope='col'>#{item.id}</td>
 														<td scope='col'>
-															<Link to={`/superadmin/project/${item.project}`}>
+															<Link to={`/superadmin/project/${item.project}/${id}`}>
 																<Assignee id={item.project} />
 															</Link>
 														</td>
-														<td scope='col'>{item.name}</td>
-														<td scope='col'>{item.source_name}</td>
+														<td scope='col'>{item.team_lead}</td>
+														{/* <td scope='col'>{item.source_name}</td> */}
 														
-														<td scope='col'>{item.dedline}</td>
+														{/* <td scope='col'>{item.dedline}</td> */}
 														<td scope='col'>{item.total_tasks}</td>
 														{/* <td>
 															<Link
