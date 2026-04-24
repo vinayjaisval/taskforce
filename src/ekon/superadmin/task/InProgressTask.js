@@ -19,12 +19,13 @@ import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link } from 'react-router-dom';
 import BASE_URL from "../../../config/api";
+import { useLocation } from 'react-router-dom';
 
 const InProgressTask = () => {
 	useMinimizeAside();
-
+	const location = useLocation();
 	const id = localStorage.getItem('sess_id');
-const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
@@ -50,7 +51,7 @@ const [loading, setLoading] = useState(true);
 		}
 
 		getAstroList(1);
-	}, [id]);
+	}, [id, location]);
 
 	async function getPaginatedData(page) {
 		setLoading(true);
@@ -66,7 +67,7 @@ const [loading, setLoading] = useState(true);
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
 			console.log('Something is Wrong -astroList Pagination');
-		} finally{
+		} finally {
 			setLoading(false);
 		}
 	}
@@ -100,7 +101,7 @@ const [loading, setLoading] = useState(true);
 			setOffset(astroListApi.data.offset);
 		} catch (error) {
 			console.log('Something is Wrong -allLeads');
-		} finally{
+		} finally {
 			setLoading(false);
 		}
 	}
@@ -190,85 +191,85 @@ const [loading, setLoading] = useState(true);
 													</div>
 												</td>
 											</tr>
-										) : 
-									 astroList.length === 0 ? (
-										<tr>
-											<td colSpan={10} className='text-center'>
-												NOT FOUND
-											</td>
-										</tr>
-									 ) : (
-											astroList.map((item, index) => (
-												<tr key={index + 1}>
-													<td scope='col'>{index + 1 + offset}</td>
-													<td scope='col'>{item.name}</td>
-													<td scope='col'>{item.source_name}</td>
-													<td scope='col'>{item.category_id_name}</td>
-													<td scope='col'>{item.dedline}</td>
-													<td scope='col'>{item.assignee}</td>
-													<td scope='col'>{item.remarks}</td>
-													<td>
-														<Link
-															to={'/superadmin/task-log/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='FollowTheSigns'>
-																Follow
-															</Button>
-														</Link>
-													</td>
-													<td>
-														<Link
-															to={'/superadmin/edit-task/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='Send'>
-																Edit
-															</Button>
-														</Link>
-													</td>
-													<td>
-														<Dropdown>
-															<DropdownToggle hasIcon={false}>
-																<Button
-																	icon='MoreHoriz'
-																	color='dark'
-																	isLight
-																	shadow='sm'
-																/>
-															</DropdownToggle>
-															<DropdownMenu isAlignmentEnd>
-																<DropdownItem>
-																	<Button icon='Visibility'>
-																		<span
-																			onClick={(e) =>
-																				handleClick(
-																					e,
-																					item.id,
-																				)
-																			}>
-																			{' '}
-																			<i className='fa fa-trash'></i>{' '}
-																			Delete Task
-																		</span>
-																	</Button>
-																</DropdownItem>
-															</DropdownMenu>
-														</Dropdown>
+										) :
+											astroList.length === 0 ? (
+												<tr>
+													<td colSpan={10} className='text-center'>
+														NOT FOUND
 													</td>
 												</tr>
-											))
-										// ) : (
-										// 	<tr>
-										// 		<td colSpan={10}>
-										// 			<div className='text-center'>
-										// 				<div className='loader'></div>
-										// 			</div>
-										// 		</td>
-										// 	</tr>
-										)}
+											) : (
+												astroList.map((item, index) => (
+													<tr key={index + 1}>
+														<td scope='col'>{index + 1 + offset}</td>
+														<td scope='col'>{item.name}</td>
+														<td scope='col'>{item.source_name}</td>
+														<td scope='col'>{item.category_id_name}</td>
+														<td scope='col'>{item.dedline}</td>
+														<td scope='col'>{item.assignee}</td>
+														<td scope='col'>{item.remarks}</td>
+														<td>
+															<Link
+																to={'/superadmin/task-log/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='FollowTheSigns'>
+																	Follow
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Link
+																to={'/superadmin/edit-task/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='Send'>
+																	Edit
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Dropdown>
+																<DropdownToggle hasIcon={false}>
+																	<Button
+																		icon='MoreHoriz'
+																		color='dark'
+																		isLight
+																		shadow='sm'
+																	/>
+																</DropdownToggle>
+																<DropdownMenu isAlignmentEnd>
+																	<DropdownItem>
+																		<Button icon='Visibility'>
+																			<span
+																				onClick={(e) =>
+																					handleClick(
+																						e,
+																						item.id,
+																					)
+																				}>
+																				{' '}
+																				<i className='fa fa-trash'></i>{' '}
+																				Delete Task
+																			</span>
+																		</Button>
+																	</DropdownItem>
+																</DropdownMenu>
+															</Dropdown>
+														</td>
+													</tr>
+												))
+												// ) : (
+												// 	<tr>
+												// 		<td colSpan={10}>
+												// 			<div className='text-center'>
+												// 				<div className='loader'></div>
+												// 			</div>
+												// 		</td>
+												// 	</tr>
+											)}
 									</tbody>
 								</table>
 							</CardBody>

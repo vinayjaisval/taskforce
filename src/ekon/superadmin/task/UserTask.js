@@ -206,74 +206,27 @@ const UserTask = () => {
 												</tr>
 											) : (
 												// {astroList && astroList.length > 0 ? (
-												astroList.map((item, index) => (
+												astroList.map((item, index) => {
+													console.log("list:", item);   // ✅ now allowed
 
-													<tr key={index + 1}>
-														<td scope='col'>#{item.id}</td>
-														<td scope='col'>
-															<Link to={`/superadmin/project/${item.project}/${id}`}>
-																<Assignee id={item.project} />
-															</Link>
-														</td>
+													return (
+														<tr key={index + 1}>
+															<td>#{item.id}</td>
 
-														<td scope='col'>{item.name}</td>
-														<td scope='col'>{item.source_name}</td>
+															<td>
+																<Link to={`/superadmin/project/${item.project}/${id}`}>
+																	<Assignee id={item.project} />
+																</Link>
+															</td>
 
-														<td scope='col'>{item.dedline}</td>
-														<td scope='col'>{item.total_tasks}</td>
-														{/* <td>
-															<Link
-																to={'/superadmin/task-log/' + item.id}>
-																<Button
-																	color='primary'
-																	isLight
-																	icon='FollowTheSigns'>
-																	Follow
-																</Button>
-															</Link>
-														</td>
-														<td>
-															<Link
-																to={'/superadmin/edit-task/' + item.id}>
-																<Button
-																	color='primary'
-																	isLight
-																	icon='Send'>
-																	Edit
-																</Button>
-															</Link>
-														</td>
-														<td>
-															<Dropdown>
-																<DropdownToggle hasIcon={false}>
-																	<Button
-																		icon='MoreHoriz'
-																		color='dark'
-																		isLight
-																		shadow='sm'
-																	/>
-																</DropdownToggle>
-																<DropdownMenu isAlignmentEnd>
-																	<DropdownItem>
-																		<Button icon='Visibility'>
-																			<span
-																				onClick={(e) =>
-																					handleClick(
-																						e,
-																						item.id,
-																					)
-																				}>
-																				{' '}
-																				<i className='fa fa-trash'></i>{' '}
-																				Delete Task
-																			</span>
-																		</Button>
-																	</DropdownItem>
-																</DropdownMenu>
-															</Dropdown>
-														</td> */}
-													</tr>
-												))
+															<td>{item.team_lead}</td>
+															<td>{item.team_members}</td>
+
+															<td>{item.deadline || '--'}</td>   {/* spelling fixed */}
+															<td>{item.total_tasks}</td>
+														</tr>
+													);
+												})
 
 												// ) : (
 												// 	<tr>
