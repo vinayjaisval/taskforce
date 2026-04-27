@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
@@ -14,8 +14,6 @@ import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link } from 'react-router-dom';
 
-import Assignee from '../user_status/Assignee';
-
 import BASE_URL from "../../../config/api";
 
 const ManageTask = () => {
@@ -23,61 +21,57 @@ const ManageTask = () => {
 
 	const id = localStorage.getItem('sess_id');
 
+	const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
-	const [totalRecords, setTotalRecords] = useState([]);
-	const [limit, setLimit] = useState([]);
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [limit, setLimit] = useState(12);
 
-	useEffect(() => {
-		async function getAstroList(page) {
-			page = page;
-			try {
-				const astroListApi = await axios.get(`${BASE_URL}/admin/leads/${id}?page=` + page);
-				setAstroList(astroListApi.data.data);
-				setTotalRecords(astroListApi.data.total);
-				setLimit(astroListApi.data.limit);
-			} catch (error) {
-				console.log('Something is Wrong -astroList');
-			}
+	const [search, setSearch] = useState({ keywords: '' });
+	const debounceRef = useRef(null);
+
+	// ✅ Common API
+	const fetchData = async (page = 1, keyword = '') => {
+		setLoading(true);
+		try {
+			const res = await axios.get(
+				`${BASE_URL}/admin/leads/${id}?page=${page}&keywords=${keyword}`
+			);
+
+			setAstroList(res.data.data || []);
+			setTotalRecords(res.data.total || 0);
+			setLimit(res.data.per_page || 12);
+
+		} catch (error) {
+			console.log('API Error');
+		} finally {
+			setLoading(false);
 		}
+	};
 
-		getAstroList(1);
+	// ✅ First Load
+	useEffect(() => {
+		fetchData(1);
 	}, [id]);
 
-	async function getPaginatedData(page) {
-		const keywordVal = document.getElementById('searchInput1').value;
+	// ✅ Pagination
+	const getPaginatedData = (page) => {
+		fetchData(page, search.keywords);
+	};
 
-		try {
-			const astroListApi = await axios.get(
-				`${BASE_URL}/admin/leads/${id}?page=` + page + `&keywords=` + keywordVal,
-			);
-			setAstroList(astroListApi.data.data);
-			setTotalRecords(astroListApi.data.total);
-			setLimit(astroListApi.data.limit);
-		} catch (error) {
-			console.log('Something is Wrong -astroList Pagination');
+	// ✅ Debounce Search
+	const onTextFieldChange = (e) => {
+		const value = e.target.value;
+
+		setSearch({ keywords: value });
+
+		if (debounceRef.current) {
+			clearTimeout(debounceRef.current);
 		}
-	}
 
-	const [search, setSearch] = useState({
-		keywords: '',
-	});
-
-	async function onTextFieldChange(e) {
-		setSearch({
-			...search,
-			[e.target.name]: e.target.value,
-		});
-		try {
-			const astroListApi = await axios.get(
-				`${BASE_URL}/admin/leads/${id}?page=1&keywords=` + e.target.value,
-			);
-			setAstroList(astroListApi.data.data);
-			setTotalRecords(astroListApi.data.total);
-			setLimit(astroListApi.data.limit);
-		} catch (error) {
-			console.log('Something is Wrong -allLeads');
-		}
-	}
+		debounceRef.current = setTimeout(() => {
+			fetchData(1, value);
+		}, 500);
+	};
 
 	return (
 		<PageWrapper title={dashboardMenu.manageAstrologer.subMenu.ManageAstro.text}>
@@ -86,110 +80,88 @@ const ManageTask = () => {
 					<Breadcrumb
 						list={[
 							{ title: 'Home', to: '/agent/dashboard.html' },
-							{
-								title: 'Manage Task',
-								to: '/agent/task.html',
-							},
+							{ title: 'Manage Task', to: '/agent/task.html' },
 						]}
 					/>
 				</SubHeaderLeft>
 			</SubHeader>
 
 			<Page>
-				<div id='bootstrap' className='row scroll-margin h-100'>
-					<div id='succ_message'>
-						<Alert
-							icon='Verified'
-							isLight
-							color='primary'
-							borderWidth={0}
-							className='shadow-3d-primary'
-							isDismissible>
-							<AlertHeading tag='h2' className='h4'>
-								Alert! 🎉
-							</AlertHeading>
-							<span id='alert_message'></span>
-						</Alert>
-					</div>
+				<div className='row h-100'>
+
 					<div className='col-12'>
 						<Card stretch>
-							<CardHeader className=''>
+
+							<CardHeader>
 								<h4>Manage Task</h4>
-								<div className='d-flex' data-tour='search'>
-									<label
-										className='border-0 bg-transparent cursor-pointer mar-t-5'
-										htmlFor='searchInput1'>
-										<Icon
-											icon='Search'
-											className='Search'
-											color='primary'
-											size='2x'
-											forceFamily={null}
-										/>
-									</label>
+
+								<div className='d-flex'>
+									<Icon icon='Search' color='primary' size='2x' />
 									<input
-										id='searchInput1'
 										type='search'
-										className='form-control border-0 shadow-none bg-transparent'
+										className='form-control'
 										placeholder='Search...'
-										autoComplete='off'
 										value={search.keywords}
-										name='keywords'
-										onChange={(e) => onTextFieldChange(e)}
+										onChange={onTextFieldChange}
 									/>
 								</div>
 							</CardHeader>
+
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table table-modern table-hover'>
 									<thead>
 										<tr>
-											<th width='1'>TaskID</th>
+											<th>TaskID</th>
 											<th>Heading</th>
 											<th>Status</th>
 											<th>Category</th>
 											<th>Deadline</th>
 											<th>Assignee</th>
-											<th width='120'></th>
+											<th></th>
 										</tr>
 									</thead>
+
 									<tbody>
-										{astroList && astroList.length > 0 ? (
+										{loading ? (
+											<tr>
+												<td colSpan={7} className='text-center'>
+													Loading...
+												</td>
+											</tr>
+										) : astroList.length === 0 ? (
+											<tr>
+												<td colSpan={7} className='text-center'>
+													NOT FOUND
+												</td>
+											</tr>
+										) : (
 											astroList.map((item, index) => (
-												<tr key={index + 1}>
-													<td scope='col'>#{item.id}</td>
-													<td scope='col'>{item.name}</td>
-													<td scope='col'>{item.source_name}</td>
-													<td scope='col'>{item.category_id_name}</td>
-													<td scope='col'>{item.dedline}</td>
-													<td scope='col'>
-														<Assignee id={item.assignee} />
-													</td>
+												<tr key={index}>
+													<td>#{item.id}</td>
+													<td>{item.name}</td>
+													<td>{item.source_name}</td>
+													<td>{item.category_id_name}</td>
+													<td>{item.dedline}</td>
+
+													{/* ✅ DIRECT FROM BACKEND */}
+													<td>{item.user_name || 'N/A'}</td>
+
 													<td>
-														<Link to={'/agent/task-log/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='FollowTheSigns'>
+														<Link to={`/agent/task-log/${item.id}`}>
+															<Button color='primary' isLight>
 																Follow
 															</Button>
 														</Link>
 													</td>
 												</tr>
 											))
-										) : (
-											<tr>
-												<td colSpan={7}>
-													<div className='text-center'>
-														<div className='loader'></div>
-													</div>
-												</td>
-											</tr>
 										)}
 									</tbody>
 								</table>
 							</CardBody>
+
 							<CardFooter>
-								{totalRecords > 12 && (
+								{totalRecords > limit && (
 									<PaginationComponent
 										getAllData={getPaginatedData}
 										totalRecords={totalRecords}
@@ -197,6 +169,7 @@ const ManageTask = () => {
 									/>
 								)}
 							</CardFooter>
+
 						</Card>
 					</div>
 				</div>

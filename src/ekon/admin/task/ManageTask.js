@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
@@ -13,206 +13,180 @@ import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
-import Assignee from '../user_status/Assignee';
+
 import BASE_URL from "../../../config/api";
 
 const ManageTask = () => {
-	useMinimizeAside();
 
-	const id = localStorage.getItem('sess_id');
-	const location = useLocation();
-	const [astroList, setAstroList] = useState([]);
-	const [totalRecords, setTotalRecords] = useState([]);
-	const [limit, setLimit] = useState([]);
+    useMinimizeAside();
 
-	useEffect(() => {
-		async function getAstroList(page) {
-			page = page;
-			try {
-				const astroListApi = await axios.get(`${BASE_URL}/admin/leads/${id}?page=` + page);
-				setAstroList(astroListApi.data.data);
-				setTotalRecords(astroListApi.data.total);
-				setLimit(astroListApi.data.limit);
-			} catch (error) {
-				console.log('Something is Wrong -astroList');
-			}
-		}
+    const id = localStorage.getItem('sess_id');
 
-		getAstroList(1);
-	}, [id, location]);
+    const [loading, setLoading] = useState(true);
+    const [astroList, setAstroList] = useState([]);
+    const [totalRecords, setTotalRecords] = useState(0);
+    const [limit, setLimit] = useState(12);
 
-	async function getPaginatedData(page) {
-		const keywordVal = document.getElementById('searchInput1').value;
+    const [search, setSearch] = useState({ keywords: '' });
+    const debounceRef = useRef(null);
 
-		try {
-			const astroListApi = await axios.get(
-				`${BASE_URL}/admin/leads/${id}?page=` + page + `&keywords=` + keywordVal,
-			);
-			setAstroList(astroListApi.data.data);
-			setTotalRecords(astroListApi.data.total);
-			setLimit(astroListApi.data.limit);
-		} catch (error) {
-			console.log('Something is Wrong -astroList Pagination');
-		}
-	}
+    // ✅ API CALL
+    const fetchData = async (page = 1, keyword = '') => {
+        setLoading(true);
 
-	const [search, setSearch] = useState({
-		keywords: '',
-	});
+        try {
+            const res = await axios.get(
+                `${BASE_URL}/admin/leads/${id}?page=${page}&keywords=${keyword}`
+            );
 
-	async function onTextFieldChange(e) {
-		setSearch({
-			...search,
-			[e.target.name]: e.target.value,
-		});
-		try {
-			const astroListApi = await axios.get(
-				`${BASE_URL}/admin/leads/${id}?page=1&keywords=` + e.target.value,
-			);
-			setAstroList(astroListApi.data.data);
-			setTotalRecords(astroListApi.data.total);
-			setLimit(astroListApi.data.limit);
-		} catch (error) {
-			console.log('Something is Wrong -allLeads');
-		}
-	}
+            setAstroList(res.data.data || []);
+            setTotalRecords(res.data.total || 0);
+            setLimit(res.data.per_page || 12);
 
-	return (
-		<PageWrapper title={dashboardMenu.manageAstrologer.subMenu.ManageAstro.text}>
-			<SubHeader>
-				<SubHeaderLeft>
-					<Breadcrumb
-						list={[
-							{ title: 'Home', to: '/admin/dashboard.html' },
-							{
-								title: 'Manage Task',
-								to: '/admin/task.html',
-							},
-						]}
-					/>
-				</SubHeaderLeft>
-			</SubHeader>
+        } catch (error) {
+            console.log('API Error');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-			<Page>
-				<div id='bootstrap' className='row scroll-margin h-100'>
-					<div id='succ_message'>
-						<Alert
-							icon='Verified'
-							isLight
-							color='primary'
-							borderWidth={0}
-							className='shadow-3d-primary'
-							isDismissible>
-							<AlertHeading tag='h2' className='h4'>
-								Alert! 🎉
-							</AlertHeading>
-							<span id='alert_message'></span>
-						</Alert>
-					</div>
-					<div className='col-12'>
-						<Card stretch>
-							<CardHeader className=''>
-								<h4>Manage Task</h4>
-								<div className='d-flex' data-tour='search'>
-									<label
-										className='border-0 bg-transparent cursor-pointer mar-t-5'
-										htmlFor='searchInput1'>
-										<Icon
-											icon='Search'
-											className='Search'
-											color='primary'
-											size='2x'
-											forceFamily={null}
-										/>
-									</label>
-									<input
-										id='searchInput1'
-										type='search'
-										className='form-control border-0 shadow-none bg-transparent'
-										placeholder='Search...'
-										autoComplete='off'
-										value={search.keywords}
-										name='keywords'
-										onChange={(e) => onTextFieldChange(e)}
-									/>
-								</div>
-							</CardHeader>
-							<CardBody isScrollable className='table-responsive'>
-								<table className='table table-modern table-hover'>
-									<thead>
-										<tr>
-											<th width='1'>TaskID</th>
-											<th>Heading</th>
-											<th>Status</th>
-											<th>Category</th>
-											<th>Deadline</th>
-											<th>Assignee</th>
-											<th width='120'></th>
-											<th width='120'></th>
-										</tr>
-									</thead>
-									<tbody>
-										{astroList && astroList.length > 0 ? (
-											astroList.map((item, index) => (
-												<tr key={index + 1}>
-													<td scope='col'>#{item.id}</td>
-													<td scope='col'>{item.name}</td>
-													<td scope='col'>{item.source_name}</td>
-													<td scope='col'>{item.category_id_name}</td>
-													<td scope='col'>{item.dedline}</td>
-													<td scope='col'>
-														<Assignee id={item.assignee} />
-													</td>
-													<td>
-														<Link to={'/admin/task-log/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='FollowTheSigns'>
-																Follow
-															</Button>
-														</Link>
-													</td>
-													<td>
-														<Link to={'/admin/edit-task/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='Send'>
-																Edit
-															</Button>
-														</Link>
-													</td>
-												</tr>
-											))
-										) : (
-											<tr>
-												<td colSpan={8}>
-													<div className='text-center'>
-														<div className='loader'></div>
-													</div>
-												</td>
-											</tr>
-										)}
-									</tbody>
-								</table>
-							</CardBody>
-							<CardFooter>
-								{totalRecords > 12 && (
-									<PaginationComponent
-										getAllData={getPaginatedData}
-										totalRecords={totalRecords}
-										itemsCountPerPage={limit}
-									/>
-								)}
-							</CardFooter>
-						</Card>
-					</div>
-				</div>
-			</Page>
-		</PageWrapper>
-	);
+    // ✅ FIRST LOAD
+    useEffect(() => {
+        fetchData(1);
+    }, [id]);
+
+    // ✅ PAGINATION
+    const getPaginatedData = (page) => {
+        fetchData(page, search.keywords);
+    };
+
+    // ✅ DEBOUNCE SEARCH
+    const onTextFieldChange = (e) => {
+        const value = e.target.value;
+
+        setSearch({ keywords: value });
+
+        if (debounceRef.current) {
+            clearTimeout(debounceRef.current);
+        }
+
+        debounceRef.current = setTimeout(() => {
+            fetchData(1, value);
+        }, 500);
+    };
+
+    return (
+        <PageWrapper title={dashboardMenu.manageAstrologer.subMenu.ManageAstro.text}>
+            <SubHeader>
+                <SubHeaderLeft>
+                    <Breadcrumb
+                        list={[
+                            { title: 'Home', to: '/admin/dashboard.html' },
+                            { title: 'Manage Task', to: '/admin/task.html' },
+                        ]}
+                    />
+                </SubHeaderLeft>
+            </SubHeader>
+
+            <Page>
+                <div className='row h-100'>
+
+                    <div className='col-12'>
+                        <Card stretch>
+
+                            <CardHeader>
+                                <h4>Manage Task</h4>
+
+                                <div className='d-flex'>
+                                    <Icon icon='Search' color='primary' size='2x' />
+                                    <input
+                                        type='search'
+                                        className='form-control'
+                                        placeholder='Search...'
+                                        value={search.keywords}
+                                        onChange={onTextFieldChange}
+                                    />
+                                </div>
+                            </CardHeader>
+
+                            <CardBody isScrollable className='table-responsive'>
+                                <table className='table table-modern table-hover'>
+                                    <thead>
+                                        <tr>
+                                            <th>TaskID</th>
+                                            <th>Heading</th>
+                                            <th>Status</th>
+                                            <th>Category</th>
+                                            <th>Deadline</th>
+                                            <th>Assignee</th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {loading ? (
+                                            <tr>
+                                                <td colSpan={8} className='text-center'>
+                                                    Loading...
+                                                </td>
+                                            </tr>
+                                        ) : astroList.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={8} className='text-center'>
+                                                    NOT FOUND
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            astroList.map((item, index) => (
+                                                <tr key={index}>
+                                                    <td>#{item.id}</td>
+                                                    <td>{item.name}</td>
+                                                    <td>{item.source_name}</td>
+                                                    <td>{item.category_id_name}</td>
+                                                    <td>{item.dedline}</td>
+
+                                                    {/* ✅ DIRECT VALUE */}
+                                                    <td>{item.user_name || 'N/A'}</td>
+
+                                                    <td>
+                                                        <Link to={`/admin/task-log/${item.id}`}>
+                                                            <Button color='primary' isLight>
+                                                                Follow
+                                                            </Button>
+                                                        </Link>
+                                                    </td>
+
+                                                    <td>
+                                                        <Link to={`/admin/edit-task/${item.id}`}>
+                                                            <Button color='primary' isLight>
+                                                                Edit
+                                                            </Button>
+                                                        </Link>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </CardBody>
+
+                            <CardFooter>
+                                {totalRecords > limit && (
+                                    <PaginationComponent
+                                        getAllData={getPaginatedData}
+                                        totalRecords={totalRecords}
+                                        itemsCountPerPage={limit}
+                                    />
+                                )}
+                            </CardFooter>
+
+                        </Card>
+                    </div>
+                </div>
+            </Page>
+        </PageWrapper>
+    );
 };
 
 export default ManageTask;

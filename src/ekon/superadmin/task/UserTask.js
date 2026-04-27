@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
@@ -7,58 +7,127 @@ import Page from '../../../layout/Page/Page';
 import Breadcrumb from '../../../components/bootstrap/Breadcrumb';
 import { dashboardMenu } from '../../../menu';
 import Card, { CardBody, CardFooter, CardHeader } from '../../../components/bootstrap/Card';
+import Button from '../../../components/bootstrap/Button';
+import Dropdown, {
+	DropdownItem,
+	DropdownMenu,
+	DropdownToggle,
+} from '../../../components/bootstrap/Dropdown';
+import Icon from '../../../components/icon/Icon';
 import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+
 import Assignee from '../user_status/Assignee';
+import { useParams } from 'react-router-dom';
+
 import BASE_URL from "../../../config/api";
 
 const UserTask = () => {
+	
+	useMinimizeAside();
 
-    useMinimizeAside();
-    const { id } = useParams();
+	const { id } = useParams();
+	console.log("User ID:", id);
+	const [loading, setLoading] = useState(true);
+	const [astroList, setAstroList] = useState([]);
+	const [totalRecords, setTotalRecords] = useState([]);
+	const [limit, setLimit] = useState([]);
 
-    const [loading, setLoading] = useState(true);
-    const [astroList, setAstroList] = useState([]);
-    const [totalRecords, setTotalRecords] = useState(0);
-    const [limit, setLimit] = useState(12);
+	useEffect(() => {
+		async function getAstroList(page) {
+			setLoading(true);
+			// page = page;
+			try {
+				const astroListApi = await axios.get(
+					`${BASE_URL}/admin/leads_users_list/${id}?page=` + page,
+				);
+				  console.log("API DATA:", astroListApi.data.data);
+				setAstroList(astroListApi.data.data);
+				setTotalRecords(astroListApi.data.total);
+				setLimit(astroListApi.data.limit);
+			} catch (error) {
+				console.log('Something is Wrong -astroList');
+			}
+			finally {
+				setLoading(false);
+			}
+		}
 
-    const [search, setSearch] = useState({
-        keywords: '',
-    });
+		getAstroList(1);
+	}, [id]);
 
-    const debounceRef = useRef(null);
+	async function getPaginatedData(page) {
+		setLoading(true);
+		const keywordVal = document.getElementById('searchInput1').value;
 
-    const getAstroList = async (page = 1, keyword = '') => {
-        setLoading(true);
-        try {
-            const res = await axios.get(
-                `${BASE_URL}/admin/leads_users_list/${id}?page=${page}&keywords=${keyword}`
-            );
+		try {
+			const astroListApi = await axios.get(
+				`${BASE_URL}/admin/leads_users_list/${id}?page=` + page + `&keywords=` + keywordVal,
+			);
+			
+			setAstroList(astroListApi.data.data);
+			setTotalRecords(astroListApi.data.total);
+			setLimit(astroListApi.data.limit);
+		} catch (error) {
+			console.log('Something is Wrong -astroList Pagination');
+		}
+		finally {
+			setLoading(false);
+		}
+	}
 
-            setAstroList(res.data.data || []);
-            setTotalRecords(res.data.total_projects || 0);
-            setLimit(res.data.per_page || 12);
+	async function handleClick(e, delId) {
+		axios.get(`${BASE_URL}/admin/lead_delete/${delId}`).then((res) => {
+			getPaginatedData(1);
+			document.getElementById('succ_message').style.display = 'block';
+			document.getElementById('alert_message').innerHTML = res.data;
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		});
+	}
 
-        } catch (error) {
-            console.log('API Error', error);
-        } finally {
-            setLoading(false);
-        }
-    };
+	const [search, setSearch] = useState({
+		keywords: '',
+	});
 
-    useEffect(() => {
-        getAstroList(1);
-    }, [id]);
+	async function onTextFieldChange(e) {
+		setLoading(true);
+		setSearch({
+			...search,
+			[e.target.name]: e.target.value,
+		});
+		try {
+			const astroListApi = await axios.get(
+				`${BASE_URL}/admin/leads_users_list/${id}?page=1&keywords=` + e.target.value,
+			);
+			console.log("Clicked ID:", item.assignee);
+			setAstroList(astroListApi.data.data);
+			setTotalRecords(astroListApi.data.total);
+			setLimit(astroListApi.data.limit);
+		} catch (error) {
+			console.log('Something is Wrong -allLeads');
+		} finally {
+			setLoading(false);
+		}
 
-    const getPaginatedData = (page) => {
-        getAstroList(page, search.keywords);
-    };
+	}
 
-    const onTextFieldChange = (e) => {
-        const value = e.target.value;
+	return (
+		<PageWrapper title={dashboardMenu.manageAstrologer.subMenu.ManageAstro.text}>
+			<SubHeader>
+				<SubHeaderLeft>
+					<Breadcrumb
+						list={[
+							{ title: 'Home', to: '/superadmin/dashboard.html' },
+							{
+								title: 'Manage User Task',
+								to: '/superadmin/task.html',
+							},
+						]}
+					/>
+				</SubHeaderLeft>
+			</SubHeader>
 
 			<Page>
 				<div id='bootstrap' className='row scroll-margin h-100'>
@@ -137,22 +206,21 @@ const UserTask = () => {
 												</tr>
 											) : (
 												// {astroList && astroList.length > 0 ? (
-												astroList.map((item, index) => {
-													console.log("items:", item);
-													return (
-														<tr key={index + 1}>
-															<td scope='col'>#{item.id}</td>
-															<td scope='col'>
-																<Link to={`/superadmin/project/${item.project}/${id}`}>
-																	<Assignee id={item.project} />
-																</Link>
-															</td>
-															<td scope='col'>{item.team_lead}</td>
-															{/* <td scope='col'>{item.source_name}</td> */}
-
-															{/* <td scope='col'>{item.dedline}</td> */}
-															<td scope='col'>{item.total_tasks}</td>
-															{/* <td>
+												astroList.map((item, index) => (
+													
+													<tr key={index + 1}>
+														<td scope='col'>#{item.id}</td>
+														<td scope='col'>
+															<Link to={`/superadmin/project/${item.project}/${id}`}>
+																<Assignee id={item.project} />
+															</Link>
+														</td>
+														<td scope='col'>{item.team_lead}</td>
+														{/* <td scope='col'>{item.source_name}</td> */}
+														
+														{/* <td scope='col'>{item.dedline}</td> */}
+														<td scope='col'>{item.total_tasks}</td>
+														{/* <td>
 															<Link
 																to={'/superadmin/task-log/' + item.id}>
 																<Button
@@ -203,10 +271,9 @@ const UserTask = () => {
 																</DropdownMenu>
 															</Dropdown>
 														</td> */}
-														</tr>
-													);
-												})
-
+													</tr>
+												))
+												
 												// ) : (
 												// 	<tr>
 												// 		<td colSpan={9}>

@@ -17,16 +17,20 @@ import Icon from '../../../components/icon/Icon';
 import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import Assignee from '../user_status/Assignee';
+import { useParams } from 'react-router-dom';
+
 import BASE_URL from "../../../config/api";
 
 const ProjectDetails = () => {
-
+  
     useMinimizeAside();
 
-    const { pId, id } = useParams();
+    const { pId,id } = useParams();
+      console.log("Project ID:", id);
+      console.log("Project pId:", pId);
 
     const [loading, setLoading] = useState(true);
     const [astroList, setAstroList] = useState([]);
@@ -54,7 +58,7 @@ const ProjectDetails = () => {
         }
 
         getAstroList(1);
-    }, [pId]);
+    }, [id]);
 
     async function getPaginatedData(page) {
         setLoading(true);
@@ -62,7 +66,7 @@ const ProjectDetails = () => {
 
         try {
             const astroListApi = await axios.get(
-                `${BASE_URL}/admin/leads_users_list/${pId}?page=` + page + `&keywords=` + keywordVal,
+                `${BASE_URL}/admin/leads_users_list/${id}?page=` + page + `&keywords=` + keywordVal,
             );
             setAstroList(astroListApi.data.data);
             setTotalRecords(astroListApi.data.total);
@@ -88,66 +92,26 @@ const ProjectDetails = () => {
         keywords: '',
     });
 
-    // ✅ Debounce Timer
-    let debounceTimer;
-
-    // ✅ API CALL FUNCTION
-    const getAstroList = async (page = 1, keyword = '') => {
+    async function onTextFieldChange(e) {
         setLoading(true);
+        setSearch({
+            ...search,
+            [e.target.name]: e.target.value,
+        });
         try {
             const astroListApi = await axios.get(
-                `${BASE_URL}/admin/leads_users_list/${pId}?page=1&keywords=` + e.target.value,
+                `${BASE_URL}/admin/leads_users_list/${id}?page=1&keywords=` + e.target.value,
             );
-
-            setAstroList(res.data.data);
-            setTotalRecords(res.data.total_tasks);
-            setLimit(res.data.per_page);
-
+            setAstroList(astroListApi.data.data);
+            setTotalRecords(astroListApi.data.total);
+            setLimit(astroListApi.data.limit);
         } catch (error) {
-            console.log('API Error');
+            console.log('Something is Wrong -allLeads');
         } finally {
             setLoading(false);
         }
-    };
 
-    // ✅ FIRST LOAD
-    useEffect(() => {
-        getAstroList(1);
-    }, [id, pId]);
-
-    // ✅ PAGINATION
-    const getPaginatedData = (page) => {
-        getAstroList(page, search.keywords);
-    };
-
-    // ✅ SEARCH WITH DEBOUNCE
-    const onTextFieldChange = (e) => {
-        const value = e.target.value;
-
-        setSearch({
-            ...search,
-            [e.target.name]: value,
-        });
-
-        clearTimeout(debounceTimer);
-
-        debounceTimer = setTimeout(() => {
-            getAstroList(1, value);
-        }, 500); // ✅ 500ms delay
-    };
-
-    // ✅ DELETE
-    const handleClick = async (e, delId) => {
-        try {
-            await axios.get(`${BASE_URL}/admin/lead_delete/${delId}`);
-            getAstroList(1);
-            document.getElementById('succ_message').style.display = 'block';
-            document.getElementById('alert_message').innerHTML = 'Deleted Successfully';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } catch (error) {
-            console.log('Delete Error');
-        }
-    };
+    }
 
     return (
         <PageWrapper title={dashboardMenu.manageAstrologer.subMenu.ManageAstro.text}>
@@ -156,102 +120,88 @@ const ProjectDetails = () => {
                     <Breadcrumb
                         list={[
                             { title: 'Home', to: '/superadmin/dashboard.html' },
-                            { title: 'Manage User Task', to: '/superadmin/task.html' },
+                            {
+                                title: 'Manage User Task',
+                                to: '/superadmin/task.html',
+                            },
                         ]}
                     />
                 </SubHeaderLeft>
             </SubHeader>
 
             <Page>
-                <div className='row h-100'>
-                    <div id='succ_message' style={{ display: 'none' }}>
-                        <Alert icon='Verified' isLight color='primary'>
-                            <AlertHeading tag='h2'>Alert! 🎉</AlertHeading>
+                <div id='bootstrap' className='row scroll-margin h-100'>
+                    <div id='succ_message'>
+                        <Alert
+                            icon='Verified'
+                            isLight
+                            color='primary'
+                            borderWidth={0}
+                            className='shadow-3d-primary'
+                            isDismissible>
+                            <AlertHeading tag='h2' className='h4'>
+                                Alert! 🎉
+                            </AlertHeading>
                             <span id='alert_message'></span>
                         </Alert>
                     </div>
-
                     <div className='col-12'>
                         <Card stretch>
-                            <CardHeader>
+                            <CardHeader className=''>
                                 <h4>Manage User Task</h4>
-
-                                {/* 🔍 SEARCH */}
-                                <div className='d-flex'>
+                                <div className='d-flex' data-tour='search'>
+                                    <label
+                                        className='border-0 bg-transparent cursor-pointer mar-t-5'
+                                        htmlFor='searchInput1'>
+                                        <Icon
+                                            icon='Search'
+                                            className='Search'
+                                            color='primary'
+                                            size='2x'
+                                            forceFamily={null}
+                                        />
+                                    </label>
                                     <input
+                                        id='searchInput1'
                                         type='search'
-                                        className='form-control'
+                                        className='form-control border-0 shadow-none bg-transparent'
                                         placeholder='Search...'
+                                        autoComplete='off'
                                         value={search.keywords}
                                         name='keywords'
-                                        onChange={onTextFieldChange}
+                                        onChange={(e) => onTextFieldChange(e)}
                                     />
                                 </div>
                             </CardHeader>
-
                             <CardBody isScrollable className='table-responsive'>
                                 <table className='table table-modern table-hover'>
                                     <thead>
                                         <tr>
-                                            <th>TaskID</th>
+                                            <th width='1'>TaskID </th>
                                             <th>Heading</th>
                                             <th>Status</th>
                                             <th>Category</th>
                                             <th>Deadline</th>
-                                           
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
+                                            <th>Project</th>
+                                            <th width='120'></th>
+                                            <th width='120'></th>
+                                            <th width='1'></th>
                                         </tr>
                                     </thead>
-
                                     <tbody>
                                         {loading ? (
                                             <tr>
-                                                <td colSpan={9} className='text-center'>
-                                                    Loading...
+                                                <td colSpan={9}>
+                                                    <div className='text-center'>
+                                                        <div className='loader'></div>
+                                                    </div>
                                                 </td>
                                             </tr>
-                                        ) : astroList.length === 0 ? (
-                                            <tr>
-                                                <td colSpan={9} className='text-center'>
-                                                    NOT FOUND
-                                                </td>
-                                            </tr>
-                                        ) : (
-                                            astroList.map((item) => (
-                                                <tr key={item.id}>
-                                                    <td>#{item.id}</td>
-                                                    <td>{item.name}</td>
-                                                    <td>{item.source_name}</td>
-                                                    <td>{item.category_name}</td>
-                                                    <td>{item.dedline}</td>
-                                                    
-                                                   
-                                                    <td>
-                                                        <Link to={`/superadmin/task-log/${item.id}`}>
-                                                            <Button color='primary' isLight>
-                                                                Follow
-                                                            </Button>
-                                                        </Link>
-                                                    </td>
-
-                                                    <td>
-                                                        <Link to={`/superadmin/edit-task/${item.id}`}>
-                                                            <Button color='primary' isLight>
-                                                                Edit
-                                                            </Button>
-                                                        </Link>
-                                                    </td>
-
-                                                    <td>
-                                                        <Button
-                                                            color='danger'
-                                                            isLight
-                                                            onClick={(e) => handleClick(e, item.id)}
-                                                        >
-                                                            Delete
-                                                        </Button>
+                                        ) :
+                                            astroList.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={9} className='text-center'>
+                                                        NOT FOUND
                                                     </td>
                                                 </tr>
                                             ) : (
@@ -265,7 +215,7 @@ const ProjectDetails = () => {
                                                         <td scope='col'>{item.dedline}</td>
                                                         <td scope='col'>
                                                             {/* <Link to={`/superadmin/project/${item.project}`}> */}
-                                                            <Assignee id={item.project} />
+                                                                <Assignee id={item.project} />
                                                             {/* </Link> */}
                                                         </td>
                                                         <td>
@@ -333,9 +283,8 @@ const ProjectDetails = () => {
                                     </tbody>
                                 </table>
                             </CardBody>
-
                             <CardFooter>
-                                {totalRecords > limit && (
+                                {totalRecords > 12 && (
                                     <PaginationComponent
                                         getAllData={getPaginatedData}
                                         totalRecords={totalRecords}
