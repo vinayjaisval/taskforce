@@ -322,7 +322,7 @@ const [loading, setLoading] = useState(true);
 										) :
 										 agentList.length === 0 ? (
 											<tr>
-												<td colspan={8} className='text-center'>
+												<td colSpan={8} className='text-center'>
 													NOT FOUND
 												</td>
 											</tr>

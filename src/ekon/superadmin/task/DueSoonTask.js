@@ -190,7 +190,7 @@ const DueSoonTask = () => {
 										) :
 											astroList.length === 0 ? (
 												<tr>
-													<td colspan={10} className='text-center'>
+													<td colSpan={10} className='text-center'>
 														NOT FOUND
 													</td>
 												</tr>

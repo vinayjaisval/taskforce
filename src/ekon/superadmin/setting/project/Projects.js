@@ -400,7 +400,7 @@ const Projects = () => {
 										) :
 											departmentList.length === 0 ? (
 												<tr>
-													<td colsSpan={8} className='text-center'>
+													<td colSpan={8} className='text-center'>
 														NOT FOUND
 													</td>
 												</tr>

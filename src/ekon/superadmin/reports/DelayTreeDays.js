@@ -161,7 +161,7 @@ const DelayThreeDay = () => {
 										) : 
 										astroList.length === 0 ? (
 											<tr>
-												<td colspan={7} className='text-center'>
+												<td colSpan={7} className='text-center'>
 													NOT FOUND
 												</td>
 											</tr>
@@ -177,14 +177,7 @@ const DelayThreeDay = () => {
 													<td scope='col'>{item.remarks}</td>
 												</tr>
 											))
-										// ) : (
-										// 	<tr>
-										// 		<td colSpan={7}>
-										// 			<div className='text-center'>
-										// 				<div className='loader'></div>
-										// 			</div>
-										// 		</td>
-										// 	</tr>
+										
 										)}
 									</tbody>
 								</table>

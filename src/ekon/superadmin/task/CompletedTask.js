@@ -191,7 +191,7 @@ const [loading, setLoading] = useState(true);
 										) :
 										 astroList.length === 0 ? (
 											<tr>
-												<td colspan={9} className='text-center'>
+												<td colSpan={9} className='text-center'>
 													NOT FOUND
 												</td>
 											</tr>

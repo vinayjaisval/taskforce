@@ -11,7 +11,6 @@ import Button from '../../../components/bootstrap/Button';
 import Icon from '../../../components/icon/Icon';
 import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
-import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link, useParams } from 'react-router-dom';
 
 import BASE_URL from "../../../config/api";
@@ -26,37 +25,32 @@ const ProjectDetails = () => {
     const [totalRecords, setTotalRecords] = useState(0);
     const [limit, setLimit] = useState(12);
 
-    const [assigneeMap, setAssigneeMap] = useState({}); // ✅ cache
-
+    const [assigneeMap, setAssigneeMap] = useState({});
     const [search, setSearch] = useState({ keywords: '' });
+
     const debounceRef = useRef(null);
 
-    // ✅ Fetch Assignees (optimized)
-    const fetchAssignees = async (projects) => {
+    // ✅ BULK ASSIGNEE API (NO 429)
+    const fetchAssignees = async (projectIds) => {
         try {
-            const uniqueIds = [...new Set(projects)];
+            const uniqueIds = [...new Set(projectIds)].filter(Boolean);
 
-            const requests = uniqueIds.map(id =>
-                axios.get(`${BASE_URL}/admin/assignee_details/${id}`)
+            if (uniqueIds.length === 0) return;
+
+            const res = await axios.get(
+                `${BASE_URL}/admin/assignee_bulk?ids=${uniqueIds.join(',')}`
             );
 
-            const responses = await Promise.all(requests);
-
-            const map = {};
-            responses.forEach((res, index) => {
-                map[uniqueIds[index]] = res.data[0]?.name || 'N/A';
-            });
-
-            setAssigneeMap(map);
-
+            setAssigneeMap(res.data || {});
         } catch (error) {
-            console.log('Assignee fetch error');
+            console.log('Assignee bulk error');
         }
     };
 
-    // ✅ Main API
+    // ✅ MAIN API
     const fetchData = async (page = 1, keyword = '') => {
         setLoading(true);
+
         try {
             const res = await axios.get(
                 `${BASE_URL}/admin/project_tasks/${pId}/${id}?page=${page}&keywords=${keyword}`
@@ -68,7 +62,7 @@ const ProjectDetails = () => {
             setTotalRecords(res.data.total || 0);
             setLimit(res.data.limit || 12);
 
-            // ✅ Fetch assignees once
+            // ✅ only ONE API call
             const projectIds = data.map(item => item.project);
             fetchAssignees(projectIds);
 
@@ -79,32 +73,27 @@ const ProjectDetails = () => {
         }
     };
 
-    // ✅ First load
+    // ✅ FIRST LOAD
     useEffect(() => {
         fetchData(1);
     }, [pId, id]);
 
-    // ✅ Pagination
+    // ✅ PAGINATION
     const getPaginatedData = (page) => {
         fetchData(page, search.keywords);
     };
 
-    // ✅ Delete
-    const handleClick = async (e, delId) => {
+    // ✅ DELETE
+    const handleClick = async (delId) => {
         try {
-            const res = await axios.get(`${BASE_URL}/admin/lead_delete/${delId}`);
+            await axios.get(`${BASE_URL}/admin/lead_delete/${delId}`);
             fetchData(1);
-
-            document.getElementById('succ_message').style.display = 'block';
-            document.getElementById('alert_message').innerHTML = res.data;
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error) {
             console.log('Delete Error');
         }
     };
 
-    // ✅ Debounce Search
+    // ✅ DEBOUNCE SEARCH
     const onTextFieldChange = (e) => {
         const value = e.target.value;
 
@@ -134,13 +123,6 @@ const ProjectDetails = () => {
 
             <Page>
                 <div className='row h-100'>
-
-                    <div id='succ_message' style={{ display: 'none' }}>
-                        <Alert icon='Verified' isLight color='primary'>
-                            <AlertHeading tag='h2'>Alert! 🎉</AlertHeading>
-                            <span id='alert_message'></span>
-                        </Alert>
-                    </div>
 
                     <div className='col-12'>
                         <Card stretch>
@@ -198,9 +180,8 @@ const ProjectDetails = () => {
                                                     <td>{item.category_name}</td>
                                                     <td>{item.dedline}</td>
 
-                                                    {/* ✅ Assignee from cache */}
                                                     <td>
-                                                        {assigneeMap[item.project] || 'Loading...'}
+                                                        {assigneeMap[item.project] || 'N/A'}
                                                     </td>
 
                                                     <td>
@@ -223,7 +204,7 @@ const ProjectDetails = () => {
                                                         <Button
                                                             color='danger'
                                                             isLight
-                                                            onClick={(e) => handleClick(e, item.id)}
+                                                            onClick={() => handleClick(item.id)}
                                                         >
                                                             Delete
                                                         </Button>

@@ -18,7 +18,7 @@ import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link } from 'react-router-dom';
-import {useLocation} from 'react-router-dom';
+
 import Assignee from '../user_status/Assignee';
 import { useParams } from 'react-router-dom';
 

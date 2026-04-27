@@ -177,14 +177,7 @@ const [loading, setLoading] = useState(true);
 													<td scope='col'>{item.remarks}</td>
 												</tr>
 											))
-										// ) : (
-										// 	<tr>
-										// 		<td colSpan={7}>
-										// 			<div className='text-center'>
-										// 				<div className='loader'></div>
-										// 			</div>
-										// 		</td>
-										// 	</tr>
+										
 										)}
 									</tbody>
 								</table>

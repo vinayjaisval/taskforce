@@ -7,12 +7,8 @@ import Page from '../../../layout/Page/Page';
 import Breadcrumb from '../../../components/bootstrap/Breadcrumb';
 import { dashboardMenu } from '../../../menu';
 import Card, { CardBody, CardFooter, CardHeader } from '../../../components/bootstrap/Card';
-import Button from '../../../components/bootstrap/Button';
-import Dropdown, {
-	DropdownItem,
-	DropdownMenu,
-	DropdownToggle,
-} from '../../../components/bootstrap/Dropdown';
+
+
 import Icon from '../../../components/icon/Icon';
 import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
@@ -78,14 +74,7 @@ const UserTask = () => {
 		}
 	}
 
-	async function handleClick(e, delId) {
-		axios.get(`${BASE_URL}/admin/lead_delete/${delId}`).then((res) => {
-			getPaginatedData(1);
-			document.getElementById('succ_message').style.display = 'block';
-			document.getElementById('alert_message').innerHTML = res.data;
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-		});
-	}
+	
 
 	const [search, setSearch] = useState({
 		keywords: '',
@@ -101,7 +90,7 @@ const UserTask = () => {
 			const astroListApi = await axios.get(
 				`${BASE_URL}/admin/leads_users_list/${id}?page=1&keywords=` + e.target.value,
 			);
-			console.log("Clicked ID:", item.assignee);
+		
 			setAstroList(astroListApi.data.data);
 			setTotalRecords(astroListApi.data.total);
 			setLimit(astroListApi.data.limit);

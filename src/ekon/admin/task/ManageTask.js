@@ -11,7 +11,7 @@ import Button from '../../../components/bootstrap/Button';
 import Icon from '../../../components/icon/Icon';
 import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
-import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
+
 import { Link } from 'react-router-dom';
 
 import BASE_URL from "../../../config/api";
