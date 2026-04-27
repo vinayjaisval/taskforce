@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
@@ -7,300 +7,174 @@ import Page from '../../../layout/Page/Page';
 import Breadcrumb from '../../../components/bootstrap/Breadcrumb';
 import { dashboardMenu } from '../../../menu';
 import Card, { CardBody, CardFooter, CardHeader } from '../../../components/bootstrap/Card';
-import Button from '../../../components/bootstrap/Button';
-import Dropdown, {
-	DropdownItem,
-	DropdownMenu,
-	DropdownToggle,
-} from '../../../components/bootstrap/Dropdown';
-import Icon from '../../../components/icon/Icon';
 import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import Assignee from '../user_status/Assignee';
-import { useParams } from 'react-router-dom';
-
 import BASE_URL from "../../../config/api";
 
 const UserTask = () => {
-	
-	useMinimizeAside();
 
-	const { id } = useParams();
-	console.log("User ID:", id);
-	const [loading, setLoading] = useState(true);
-	const [astroList, setAstroList] = useState([]);
-	const [totalRecords, setTotalRecords] = useState([]);
-	const [limit, setLimit] = useState([]);
+    useMinimizeAside();
+    const { id } = useParams();
 
-	useEffect(() => {
-		async function getAstroList(page) {
-			setLoading(true);
-			// page = page;
-			try {
-				const astroListApi = await axios.get(
-					`${BASE_URL}/admin/leads_users_list/${id}?page=` + page,
-				);
-				  console.log("API DATA:", astroListApi.data.data);
-				setAstroList(astroListApi.data.data);
-				setTotalRecords(astroListApi.data.total);
-				setLimit(astroListApi.data.limit);
-			} catch (error) {
-				console.log('Something is Wrong -astroList');
-			}
-			finally {
-				setLoading(false);
-			}
-		}
+    const [loading, setLoading] = useState(true);
+    const [astroList, setAstroList] = useState([]);
+    const [totalRecords, setTotalRecords] = useState(0);
+    const [limit, setLimit] = useState(12);
 
-		getAstroList(1);
-	}, [id]);
+    const [search, setSearch] = useState({
+        keywords: '',
+    });
 
-	async function getPaginatedData(page) {
-		setLoading(true);
-		const keywordVal = document.getElementById('searchInput1').value;
+    const debounceRef = useRef(null);
 
-		try {
-			const astroListApi = await axios.get(
-				`${BASE_URL}/admin/leads_users_list/${id}?page=` + page + `&keywords=` + keywordVal,
-			);
-			
-			setAstroList(astroListApi.data.data);
-			setTotalRecords(astroListApi.data.total);
-			setLimit(astroListApi.data.limit);
-		} catch (error) {
-			console.log('Something is Wrong -astroList Pagination');
-		}
-		finally {
-			setLoading(false);
-		}
-	}
+    const getAstroList = async (page = 1, keyword = '') => {
+        setLoading(true);
+        try {
+            const res = await axios.get(
+                `${BASE_URL}/admin/leads_users_list/${id}?page=${page}&keywords=${keyword}`
+            );
 
-	async function handleClick(e, delId) {
-		axios.get(`${BASE_URL}/admin/lead_delete/${delId}`).then((res) => {
-			getPaginatedData(1);
-			document.getElementById('succ_message').style.display = 'block';
-			document.getElementById('alert_message').innerHTML = res.data;
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-		});
-	}
+            setAstroList(res.data.data || []);
+            setTotalRecords(res.data.total_projects || 0);
+            setLimit(res.data.per_page || 12);
 
-	const [search, setSearch] = useState({
-		keywords: '',
-	});
+        } catch (error) {
+            console.log('API Error', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-	async function onTextFieldChange(e) {
-		setLoading(true);
-		setSearch({
-			...search,
-			[e.target.name]: e.target.value,
-		});
-		try {
-			const astroListApi = await axios.get(
-				`${BASE_URL}/admin/leads_users_list/${id}?page=1&keywords=` + e.target.value,
-			);
-			console.log("Clicked ID:", item.assignee);
-			setAstroList(astroListApi.data.data);
-			setTotalRecords(astroListApi.data.total);
-			setLimit(astroListApi.data.limit);
-		} catch (error) {
-			console.log('Something is Wrong -allLeads');
-		} finally {
-			setLoading(false);
-		}
+    useEffect(() => {
+        getAstroList(1);
+    }, [id]);
 
-	}
+    const getPaginatedData = (page) => {
+        getAstroList(page, search.keywords);
+    };
 
-	return (
-		<PageWrapper title={dashboardMenu.manageAstrologer.subMenu.ManageAstro.text}>
-			<SubHeader>
-				<SubHeaderLeft>
-					<Breadcrumb
-						list={[
-							{ title: 'Home', to: '/superadmin/dashboard.html' },
-							{
-								title: 'Manage User Task',
-								to: '/superadmin/task.html',
-							},
-						]}
-					/>
-				</SubHeaderLeft>
-			</SubHeader>
+    const onTextFieldChange = (e) => {
+        const value = e.target.value;
 
-			<Page>
-				<div id='bootstrap' className='row scroll-margin h-100'>
-					<div id='succ_message'>
-						<Alert
-							icon='Verified'
-							isLight
-							color='primary'
-							borderWidth={0}
-							className='shadow-3d-primary'
-							isDismissible>
-							<AlertHeading tag='h2' className='h4'>
-								Alert! 🎉
-							</AlertHeading>
-							<span id='alert_message'></span>
-						</Alert>
-					</div>
-					<div className='col-12'>
-						<Card stretch>
-							<CardHeader className=''>
-								<h4>Manage User Task</h4>
-								<div className='d-flex' data-tour='search'>
-									<label
-										className='border-0 bg-transparent cursor-pointer mar-t-5'
-										htmlFor='searchInput1'>
-										<Icon
-											icon='Search'
-											className='Search'
-											color='primary'
-											size='2x'
-											forceFamily={null}
-										/>
-									</label>
-									<input
-										id='searchInput1'
-										type='search'
-										className='form-control border-0 shadow-none bg-transparent'
-										placeholder='Search...'
-										autoComplete='off'
-										value={search.keywords}
-										name='keywords'
-										onChange={(e) => onTextFieldChange(e)}
-									/>
-								</div>
-							</CardHeader>
-							<CardBody isScrollable className='table-responsive'>
-								<table className='table table-modern table-hover'>
-									<thead>
-										<tr>
-											<th width='1'>TaskID </th>
-											<th>Project</th>
-											<th>Team Leader</th>
-											{/* <th>Assignee</th> */}
-											{/* <th>Deadline</th> */}
-											<th>Total Task</th>
-											{/* <th width='120'></th>
-											<th width='120'></th>
-											<th width='1'></th> */}
-										</tr>
-									</thead>
-									<tbody>
-										{loading ? (
-											<tr>
-												<td colSpan={9}>
-													<div className='text-center'>
-														<div className='loader'></div>
-													</div>
-												</td>
-											</tr>
-										) :
-											astroList.length === 0 ? (
-												<tr>
-													<td colSpan={9} className='text-center'>
-														NOT FOUND
-													</td>
-												</tr>
-											) : (
-												// {astroList && astroList.length > 0 ? (
-												astroList.map((item, index) => (
-													
-													<tr key={index + 1}>
-														<td scope='col'>#{item.id}</td>
-														<td scope='col'>
-															<Link to={`/superadmin/project/${item.project}/${id}`}>
-																<Assignee id={item.project} />
-															</Link>
-														</td>
-														<td scope='col'>{item.team_lead}</td>
-														{/* <td scope='col'>{item.source_name}</td> */}
-														
-														{/* <td scope='col'>{item.dedline}</td> */}
-														<td scope='col'>{item.total_tasks}</td>
-														{/* <td>
-															<Link
-																to={'/superadmin/task-log/' + item.id}>
-																<Button
-																	color='primary'
-																	isLight
-																	icon='FollowTheSigns'>
-																	Follow
-																</Button>
-															</Link>
-														</td>
-														<td>
-															<Link
-																to={'/superadmin/edit-task/' + item.id}>
-																<Button
-																	color='primary'
-																	isLight
-																	icon='Send'>
-																	Edit
-																</Button>
-															</Link>
-														</td>
-														<td>
-															<Dropdown>
-																<DropdownToggle hasIcon={false}>
-																	<Button
-																		icon='MoreHoriz'
-																		color='dark'
-																		isLight
-																		shadow='sm'
-																	/>
-																</DropdownToggle>
-																<DropdownMenu isAlignmentEnd>
-																	<DropdownItem>
-																		<Button icon='Visibility'>
-																			<span
-																				onClick={(e) =>
-																					handleClick(
-																						e,
-																						item.id,
-																					)
-																				}>
-																				{' '}
-																				<i className='fa fa-trash'></i>{' '}
-																				Delete Task
-																			</span>
-																		</Button>
-																	</DropdownItem>
-																</DropdownMenu>
-															</Dropdown>
-														</td> */}
-													</tr>
-												))
-												
-												// ) : (
-												// 	<tr>
-												// 		<td colSpan={9}>
-												// 			<div className='text-center'>
-												// 				<div className='loader'></div>
-												// 			</div>
-												// 		</td>
-												// 	</tr>
-											)}
-									</tbody>
-								</table>
-							</CardBody>
-							<CardFooter>
-								{totalRecords > 12 && (
-									<PaginationComponent
-										getAllData={getPaginatedData}
-										totalRecords={totalRecords}
-										itemsCountPerPage={limit}
-									/>
-								)}
-							</CardFooter>
-						</Card>
-					</div>
-				</div>
-			</Page>
-		</PageWrapper>
-	);
+        setSearch((prev) => ({
+            ...prev,
+            [e.target.name]: value,
+        }));
+
+        if (debounceRef.current) {
+            clearTimeout(debounceRef.current);
+        }
+
+        debounceRef.current = setTimeout(() => {
+            getAstroList(1, value);
+        }, 500);
+    };
+
+    return (
+        <PageWrapper title={dashboardMenu.manageAstrologer.subMenu.ManageAstro.text}>
+            <SubHeader>
+                <SubHeaderLeft>
+                    <Breadcrumb
+                        list={[
+                            { title: 'Home', to: '/superadmin/dashboard.html' },
+                            { title: 'Manage User Task', to: '/superadmin/task.html' },
+                        ]}
+                    />
+                </SubHeaderLeft>
+            </SubHeader>
+
+            <Page>
+                <div className='row h-100'>
+
+                    <div id='succ_message' style={{ display: 'none' }}>
+                        <Alert icon='Verified' isLight color='primary'>
+                            <AlertHeading tag='h2'>Alert! 🎉</AlertHeading>
+                            <span id='alert_message'></span>
+                        </Alert>
+                    </div>
+
+                    <div className='col-12'>
+                        <Card stretch>
+
+                            <CardHeader>
+                                <h4>Manage User Task</h4>
+
+                                <div className='d-flex'>
+                                    <input
+                                        type='search'
+                                        className='form-control'
+                                        placeholder='Search...'
+                                        value={search.keywords}
+                                        name='keywords'
+                                        onChange={onTextFieldChange}
+                                    />
+                                </div>
+                            </CardHeader>
+
+                            <CardBody isScrollable className='table-responsive'>
+                                <table className='table table-modern table-hover'>
+                                    <thead>
+                                        <tr>
+                                            <th>TaskID</th>
+                                            <th>Project</th>
+                                            <th>Team Leader</th>
+                                            <th>Total Task</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {loading ? (
+                                            <tr>
+                                                <td colSpan={4} className='text-center'>
+                                                    Loading...
+                                                </td>
+                                            </tr>
+                                        ) : astroList.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={4} className='text-center'>
+                                                    NOT FOUND
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            astroList.map((item, index) => (
+                                                <tr key={index}>
+                                                    <td>#{index + 1}</td>
+
+                                                    <td>
+                                                        <Link to={`/superadmin/project/${item.project}/${id}`}>
+                                                            <Assignee id={item.project} />
+                                                        </Link>
+                                                    </td>
+
+                                                    <td>{item.team_lead || 'N/A'}</td>
+                                                    <td>{item.total_tasks || 0}</td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </CardBody>
+
+                            <CardFooter>
+                                {totalRecords > limit && (
+                                    <PaginationComponent
+                                        getAllData={getPaginatedData}
+                                        totalRecords={totalRecords}
+                                        itemsCountPerPage={limit}
+                                    />
+                                )}
+                            </CardFooter>
+
+                        </Card>
+                    </div>
+                </div>
+            </Page>
+        </PageWrapper>
+    );
 };
 
 export default UserTask;

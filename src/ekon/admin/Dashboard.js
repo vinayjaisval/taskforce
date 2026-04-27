@@ -54,7 +54,7 @@ const Dashboard = () => {
 		const getDepartmentCount = async () => {
 		try {
 			const res = await axios.get(`${BASE_URL}/admin/all-department-count/${id}`);
-			console.log("departmentCount API:", res.data);
+			
 			setDepartmentCount(res.data.data || []);
 		} catch {
 			console.log("Department Error");
@@ -126,7 +126,7 @@ const Dashboard = () => {
 													</CardBody>
 													<CardFooter className=''>
 														<Link to={'/admin/user-task/' + item.id}>
-															Task List
+															Project List
 														</Link>
 													</CardFooter>
 												</Card>
