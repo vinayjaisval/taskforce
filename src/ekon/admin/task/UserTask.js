@@ -18,23 +18,24 @@ import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link } from 'react-router-dom';
-
+import { useLocation } from 'react-router-dom';
 import Assignee from '../user_status/Assignee';
 import { useParams } from 'react-router-dom';
 import BASE_URL from "../../../config/api";
 
 const UserTask = () => {
 	useMinimizeAside();
-
+	const location = useLocation();
 	const { id } = useParams();
-
+	const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
 	const [totalRecords, setTotalRecords] = useState([]);
 	const [limit, setLimit] = useState([]);
 
 	useEffect(() => {
 		async function getAstroList(page) {
-			page = page;
+			setLoading(true);
+			// page = page;
 			try {
 				const astroListApi = await axios.get(
 					`${BASE_URL}/admin/leads_users_list/${id}?page=` + page,
@@ -44,13 +45,16 @@ const UserTask = () => {
 				setLimit(astroListApi.data.limit);
 			} catch (error) {
 				console.log('Something is Wrong -astroList');
+			} finally {
+				setLoading(false);
 			}
 		}
 
 		getAstroList(1);
-	}, [id]);
+	}, [id, location]);
 
 	async function getPaginatedData(page) {
+		setLoading(true);
 		const keywordVal = document.getElementById('searchInput1').value;
 
 		try {
@@ -62,6 +66,8 @@ const UserTask = () => {
 			setLimit(astroListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -astroList Pagination');
+		} finally {
+			setLoading(false);
 		}
 	}
 
@@ -79,6 +85,7 @@ const UserTask = () => {
 	});
 
 	async function onTextFieldChange(e) {
+		setLoading(true);
 		setSearch({
 			...search,
 			[e.target.name]: e.target.value,
@@ -92,6 +99,8 @@ const UserTask = () => {
 			setLimit(astroListApi.data.limit);
 		} catch (error) {
 			console.log('Something is Wrong -allLeads');
+		} finally {
+			setLoading(false);
 		}
 	}
 
@@ -160,80 +169,19 @@ const UserTask = () => {
 									<thead>
 										<tr>
 											<th width='1'>TaskID </th>
-											<th>Heading</th>
-											<th>Status</th>
-											<th>Category</th>
-											<th>Deadline</th>
+											<th>Project</th>
+											<th>Team Leader</th>
+											<th>Team Member</th>
+											<th>Total Task</th>
+											{/* <th>Deadline</th>
 											<th>Project</th>
 											<th width='120'></th>
 											<th width='120'></th>
-											<th width='1'></th>
+											<th width='1'></th> */}
 										</tr>
 									</thead>
 									<tbody>
-										{astroList && astroList.length > 0 ? (
-											astroList.map((item, index) => (
-												<tr key={index + 1}>
-													<td scope='col'>#{item.id}</td>
-													<td scope='col'>{item.name}</td>
-													<td scope='col'>{item.source_name}</td>
-													<td scope='col'>{item.category_id_name}</td>
-													<td scope='col'>{item.dedline}</td>
-													<td scope='col'>
-														<Assignee id={item.project} />
-													</td>
-													<td>
-														<Link to={'/admin/task-log/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='FollowTheSigns'>
-																Follow
-															</Button>
-														</Link>
-													</td>
-													<td>
-														<Link to={'/admin/edit-task/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='Send'>
-																Edit
-															</Button>
-														</Link>
-													</td>
-													<td>
-														<Dropdown>
-															<DropdownToggle hasIcon={false}>
-																<Button
-																	icon='MoreHoriz'
-																	color='dark'
-																	isLight
-																	shadow='sm'
-																/>
-															</DropdownToggle>
-															<DropdownMenu isAlignmentEnd>
-																<DropdownItem>
-																	<Button icon='Visibility'>
-																		<span
-																			onClick={(e) =>
-																				handleClick(
-																					e,
-																					item.id,
-																				)
-																			}>
-																			{' '}
-																			<i className='fa fa-trash'></i>{' '}
-																			Delete Task
-																		</span>
-																	</Button>
-																</DropdownItem>
-															</DropdownMenu>
-														</Dropdown>
-													</td>
-												</tr>
-											))
-										) : (
+										{loading ? (
 											<tr>
 												<td colSpan={9}>
 													<div className='text-center'>
@@ -241,7 +189,91 @@ const UserTask = () => {
 													</div>
 												</td>
 											</tr>
-										)}
+										) :
+											astroList.length === 0 ? (
+												<tr>
+													<td colSpan={9} className='text-center'>
+														NOT FOUND
+													</td>
+												</tr>
+											) : (
+												astroList.map((item, index) => {
+													console.log("items:", item);
+													return(
+													<tr key={index + 1}>
+														<td scope='col'>#{item.id}</td>
+														<td scope='col'>
+															<Link to={`/admin/project/${item.project}/${id}`}>
+																<Assignee id={item.project} />
+															</Link>
+														</td>
+														<td scope='col'>{item.team_lead}</td>
+														<td scope='col'>{item.team_members}</td>
+														<td scope='col'>{item.total_tasks}</td>
+														{/* <td scope='col'>{item.category_id_name}</td>
+														<td scope='col'>{item.dedline}</td> */}
+														{/* 														
+														<td>
+															<Link to={'/admin/task-log/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='FollowTheSigns'>
+																	Follow
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Link to={'/admin/edit-task/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='Send'>
+																	Edit
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Dropdown>
+																<DropdownToggle hasIcon={false}>
+																	<Button
+																		icon='MoreHoriz'
+																		color='dark'
+																		isLight
+																		shadow='sm'
+																	/>
+																</DropdownToggle>
+																<DropdownMenu isAlignmentEnd>
+																	<DropdownItem>
+																		<Button icon='Visibility'>
+																			<span
+																				onClick={(e) =>
+																					handleClick(
+																						e,
+																						item.id,
+																					)
+																				}>
+																				{' '}
+																				<i className='fa fa-trash'></i>{' '}
+																				Delete Task
+																			</span>
+																		</Button>
+																	</DropdownItem>
+																</DropdownMenu>
+															</Dropdown>
+														</td> */}
+													</tr>
+													);
+												})
+												// ) : (
+												// <tr>
+												// 	<td colSpan={9}>
+												// 		<div className='text-center'>
+												// 			<div className='loader'></div>
+												// 		</div>
+												// 	</td>
+												// </tr>
+											)}
 									</tbody>
 								</table>
 							</CardBody>

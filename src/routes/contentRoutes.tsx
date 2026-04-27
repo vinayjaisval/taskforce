@@ -78,6 +78,7 @@ const AdminLead = {
 	edit_task: lazy(() => import('../ekon/admin/task/EditTask')),
 	log_task: lazy(() => import('../ekon/admin/task/LogTask')),
 	user_task: lazy(() => import('../ekon/admin/task/UserTask')),
+	project_details: lazy(() => import('../ekon/admin/task/ProjectDetails')),
 
 	// Master ---
 	Profile: lazy(() => import('../ekon/admin/setting/Profile')),
@@ -476,6 +477,11 @@ const presentation = [
 		path: 'admin/user-task/:id',
 		element: <AdminLead.user_task />,
 		exact: true,
+	},
+	{
+		path: 'admin/project/:pId/:id',
+		element: <AdminLead.project_details />,
+		exact:true,
 	},
 
 	// Master ===

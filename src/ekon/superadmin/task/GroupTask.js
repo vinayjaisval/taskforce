@@ -18,13 +18,13 @@ import PaginationComponent from '../PaginationComponent';
 import useMinimizeAside from '../../../hooks/useMinimizeAside';
 import Alert, { AlertHeading } from '../../../components/bootstrap/Alert';
 import { Link } from 'react-router-dom';
-
+import { useLocation } from 'react-router-dom';
 import Assignee from '../user_status/Assignee';
 import BASE_URL from "../../../config/api";
 
 const GroupTask = () => {
 	useMinimizeAside();
-
+	const location = useLocation();
 	const id = localStorage.getItem('sess_id');
 	const [loading, setLoading] = useState(true);
 	const [astroList, setAstroList] = useState([]);
@@ -44,13 +44,13 @@ const GroupTask = () => {
 				setLimit(astroListApi.data.limit);
 			} catch (error) {
 				console.log('Something is Wrong -astroList');
-			} finally{
+			} finally {
 				setLoading(false);
 			}
 		}
 
 		getAstroList(1);
-	}, [id]);
+	}, [id, location]);
 
 	async function getPaginatedData(page) {
 		setLoading(true);
@@ -188,85 +188,85 @@ const GroupTask = () => {
 												</td>
 											</tr>
 										) :
-										astroList.length === 0 ? (
-											<tr>
-												<td colSpan={9} className='text-center'>
-													NOT FOUND
-												</td>
-											</tr>
-										) : (
-											astroList.map((item, index) => (
-												<tr key={index + 1}>
-													<td scope='col'>#{item.id}</td>
-													<td scope='col'>{item.name}</td>
-													<td scope='col'>{item.source_name}</td>
-													<td scope='col'>{item.category_id_name}</td>
-													<td scope='col'>{item.dedline}</td>
-													<td scope='col'>
-														<Assignee id={item.assignee} />
-													</td>
-													<td>
-														<Link
-															to={'/superadmin/task-log/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='FollowTheSigns'>
-																Follow
-															</Button>
-														</Link>
-													</td>
-													<td>
-														<Link
-															to={'/superadmin/edit-task/' + item.id}>
-															<Button
-																color='primary'
-																isLight
-																icon='Send'>
-																Edit
-															</Button>
-														</Link>
-													</td>
-													<td>
-														<Dropdown>
-															<DropdownToggle hasIcon={false}>
-																<Button
-																	icon='MoreHoriz'
-																	color='dark'
-																	isLight
-																	shadow='sm'
-																/>
-															</DropdownToggle>
-															<DropdownMenu isAlignmentEnd>
-																<DropdownItem>
-																	<Button icon='Visibility'>
-																		<span
-																			onClick={(e) =>
-																				handleClick(
-																					e,
-																					item.id,
-																				)
-																			}>
-																			{' '}
-																			<i className='fa fa-trash'></i>{' '}
-																			Delete Task
-																		</span>
-																	</Button>
-																</DropdownItem>
-															</DropdownMenu>
-														</Dropdown>
+											astroList.length === 0 ? (
+												<tr>
+													<td colSpan={9} className='text-center'>
+														NOT FOUND
 													</td>
 												</tr>
-											))
-										// ) : (
-										// 	<tr>
-										// 		<td colSpan={9}>
-										// 			<div className='text-center'>
-										// 				<div className='loader'></div>
-										// 			</div>
-										// 		</td>
-										// 	</tr>
-										)}
+											) : (
+												astroList.map((item, index) => (
+													<tr key={index + 1}>
+														<td scope='col'>#{item.id}</td>
+														<td scope='col'>{item.name}</td>
+														<td scope='col'>{item.source_name}</td>
+														<td scope='col'>{item.category_id_name}</td>
+														<td scope='col'>{item.dedline}</td>
+														<td scope='col'>
+															<Assignee id={item.assignee} />
+														</td>
+														<td>
+															<Link
+																to={'/superadmin/task-log/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='FollowTheSigns'>
+																	Follow
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Link
+																to={'/superadmin/edit-task/' + item.id}>
+																<Button
+																	color='primary'
+																	isLight
+																	icon='Send'>
+																	Edit
+																</Button>
+															</Link>
+														</td>
+														<td>
+															<Dropdown>
+																<DropdownToggle hasIcon={false}>
+																	<Button
+																		icon='MoreHoriz'
+																		color='dark'
+																		isLight
+																		shadow='sm'
+																	/>
+																</DropdownToggle>
+																<DropdownMenu isAlignmentEnd>
+																	<DropdownItem>
+																		<Button icon='Visibility'>
+																			<span
+																				onClick={(e) =>
+																					handleClick(
+																						e,
+																						item.id,
+																					)
+																				}>
+																				{' '}
+																				<i className='fa fa-trash'></i>{' '}
+																				Delete Task
+																			</span>
+																		</Button>
+																	</DropdownItem>
+																</DropdownMenu>
+															</Dropdown>
+														</td>
+													</tr>
+												))
+												// ) : (
+												// 	<tr>
+												// 		<td colSpan={9}>
+												// 			<div className='text-center'>
+												// 				<div className='loader'></div>
+												// 			</div>
+												// 		</td>
+												// 	</tr>
+											)}
 									</tbody>
 								</table>
 							</CardBody>

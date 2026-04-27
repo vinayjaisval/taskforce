@@ -30,6 +30,7 @@ const LogTask = () => {
 		remarks: '',
 		newremarks: '',
 	});
+	// console.log("COMPONENT RENDERED:", lead.time_status);
 	const [logLoading, setLogLoading] = useState(true);
 	const [sourceList, setSourceList] = useState([]);
 	const [categoryList, setCategoryList] = useState([]);
@@ -55,13 +56,23 @@ const LogTask = () => {
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		} else {
 			try {
-				axios
-					.post(`${BASE_URL}/admin/update-lead-followup/${id}/${userIds}`, lead)
-					.then((res) => {
-						document.getElementById('succ_message').style.display = 'block';
-						document.getElementById('alert_message').innerHTML = res.data;
-						window.scrollTo({ top: 0, behavior: 'smooth' });
-					});
+
+				const res = await axios.post(
+					`${BASE_URL}/admin/update-lead-followup/${id}/${userIds}`,
+					lead
+				);
+
+
+				document.getElementById('succ_message').style.display = 'block';
+				document.getElementById('alert_message').innerHTML = res.data;
+
+				setLead((prev) => ({
+					...prev,
+					newremarks: '',
+				}));
+
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+
 			} catch (error) {
 				alert('Something is Wrong');
 				window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -155,38 +166,43 @@ const LogTask = () => {
 	}, [id]);
 
 	useEffect(() => {
-  async function getTaskLog() {
-    setLogLoading(true);
-    console.log("API call start");
+		async function getTaskLog() {
+			setLogLoading(true);
+			console.log("API call start");
 
-    try {
-      const logApi = await axios.get(`${BASE_URL}/admin/leads-log/${id}`);
-      
-      console.log("API response:", logApi.data);
-      console.log("DATA ARRAY:", logApi.data.data);
+			try {
+				const logApi = await axios.get(`${BASE_URL}/admin/leads-log/${id}`);
 
-      setLogList(logApi.data.data);
-    } catch (error) {
-      console.log('Something is Wrong -taskLog', error);
-    } finally {
-      console.log("API finished");
-      setLogLoading(false);
-    }
-  }
+				console.log("API response:", logApi.data);
+				console.log("DATA ARRAY:", logApi.data.data);
 
-  getTaskLog();
-}, [id]);
+				setLogList(logApi.data.data);
+			} catch (error) {
+				console.log('Something is Wrong -taskLog', error);
+			} finally {
+				console.log("API finished");
+				setLogLoading(false);
+			}
+		}
+
+		getTaskLog();
+	}, [id]);
 
 	async function onTimerCal(e, leadIds) {
 		e.preventDefault();
-
+		// console.log("BEFORE API:", lead.time_status);
 		try {
 			await axios.get(`${BASE_URL}/admin/timer-calculation/${userIds}/${leadIds}`);
 
-			document.getElementById('succ_message1').style.display = 'block';
-			document.getElementById('alert_message1').innerHTML =
-				'Your Time Updated. Please Refrese Page to see the Changes!!';
-			window.scrollTo({ top: 0, behavior: 'smooth' });
+			// SHOW ALERT
+			// document.getElementById('succ_message1').style.display = 'block';
+			// document.getElementById('alert_message1').innerHTML =
+			// 	'Your Time Updated. Please Refresh Page to see the Changes!!';
+
+			// 🔥 IMPORTANT: REFRESH LEAD DATA
+			const updatedLead = await axios.get(`${BASE_URL}/admin/edit-lead/${id}`);
+			setLead(updatedLead.data);
+
 		} catch (error) { }
 	}
 
@@ -218,7 +234,7 @@ const LogTask = () => {
 								<h4>Start/End Task</h4>
 							</CardHeader>
 							<CardBody className='row g-4'>
-								<div id='succ_message1'>
+								{/* <div id='succ_message1'>
 									<Alert
 										icon='Verified'
 										isLight
@@ -231,7 +247,7 @@ const LogTask = () => {
 										</AlertHeading>
 										<span id='alert_message1'></span>
 									</Alert>
-								</div>
+								</div> */}
 								<br />
 
 								<h6
@@ -246,7 +262,7 @@ const LogTask = () => {
 								</h6>
 
 								<br />
-
+								{/* <p>Current time status: {lead.time_status}</p> */}
 								{lead.time_status == 1 ? (
 									<Button
 										color='warning'
@@ -464,7 +480,7 @@ const LogTask = () => {
 							</CardHeader>
 							<CardBody style={{ maxHeight: '500px', overflow: 'auto' }}>
 								{logLoading ? (
-									
+
 									<div className='text-center'>
 										<div className='loader'></div>
 									</div>
